@@ -43,6 +43,13 @@ public class Clarry {
                 System.out.println(" Nice! I've marked this task as done:");
                 System.out.println("   [X] " + tasks[index]);
                 System.out.println("____________________________________________________________");
+            } else if (input.startsWith("unmark ")) {
+                int index = Integer.parseInt(input.substring(7)) - 1;
+                isDone[index] = false;
+                System.out.println("____________________________________________________________");
+                System.out.println(" OK, I've marked this task as not done yet:");
+                System.out.println("   [ ] " + tasks[index]);
+                System.out.println("____________________________________________________________");
             } else {
                 tasks[taskCount] = input;
                 isDone[taskCount] = false;
