@@ -48,15 +48,41 @@ public class Clarry {
                 System.out.println(" OK, I've marked this task as not done yet:");
                 System.out.println("   " + tasks[index]);
                 System.out.println("____________________________________________________________");
-            } else {
-                tasks[taskCount] = new Task(input);
+            } else if (input.startsWith("todo ")) {
+                Task t = new Todo(input.substring(5));
+                tasks[taskCount] = t;
                 taskCount++;
-                System.out.println("____________________________________________________________");
-                System.out.println(" added: " + input);
-                System.out.println("____________________________________________________________");
+                printAdded(t, taskCount);
+            } else if (input.startsWith("deadline ")) {
+                String rest = input.substring(9);
+                String[] parts = rest.split(" /by ");
+                Task t = new Deadline(parts[0], parts[1]);
+                tasks[taskCount] = t;
+                taskCount++;
+                printAdded(t, taskCount);
+            } else if (input.startsWith("event ")) {
+                String rest = input.substring(6);
+                String[] fromSplit = rest.split(" /from ");
+                String[] toSplit = fromSplit[1].split(" /to ");
+                Task t = new Event(fromSplit[0], toSplit[0], toSplit[1]);
+                tasks[taskCount] = t;
+                taskCount++;
+                printAdded(t, taskCount);
+            } else {
+                Task t = new Todo(input);
+                tasks[taskCount] = t;
+                taskCount++;
+                printAdded(t, taskCount);
             }
         }
 
         scanner.close();
+    }
+    private static void printAdded(Task t, int taskCount) {
+        System.out.println("____________________________________________________________");
+        System.out.println(" Got it. I've added this task:");
+        System.out.println("   " + t);
+        System.out.println(" Now you have " + taskCount + " tasks in the list.");
+        System.out.println("____________________________________________________________");
     }
 }

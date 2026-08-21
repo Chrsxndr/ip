@@ -1,7 +1,7 @@
 /**
- * Represents a task and whether it has been completed.
+ * Represents the shared information and behaviour of a task.
  */
-public class Task {
+public abstract class Task {
     private final String description;
     private boolean isDone;
 
@@ -10,7 +10,7 @@ public class Task {
      *
      * @param description description of the task
      */
-    public Task(String description) {
+    protected Task(String description) {
         this.description = description;
         this.isDone = false;
     }
@@ -21,7 +21,7 @@ public class Task {
      * @return {@code "X"} if the task is done, or a space otherwise
      */
     public String getStatusIcon() {
-        return (isDone ? "X" : " ");
+        return isDone ? "X" : " ";
     }
 
     /** Marks this task as complete. */
@@ -43,13 +43,4 @@ public class Task {
         return description;
     }
 
-    /**
-     * Returns a display-friendly representation of this task.
-     *
-     * @return completion status and description
-     */
-    @Override
-    public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
-    }
 }
