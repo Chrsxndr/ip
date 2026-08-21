@@ -24,70 +24,88 @@ public class Clarry {
         Scanner scanner = new Scanner(System.in);
         List<Task> tasks = new ArrayList<>();
 
+        commandLoop:
         while (true) {
             String input = scanner.nextLine();
 
             try {
-                if (input.equals("bye")) {
+                CommandType commandType = CommandType.fromWord(getCommandWord(input));
+                switch (commandType) {
+                case BYE:
+                    if (!input.equals("bye")) {
+                        throwUnknownCommand();
+                    }
                     System.out.println("____________________________________________________________");
                     System.out.println(" Bye. Hope to see you again soon!");
                     System.out.println("____________________________________________________________");
-                    break;
-                } else if (input.equals("list")) {
+                    break commandLoop;
+                case LIST:
+                    if (!input.equals("list")) {
+                        throwUnknownCommand();
+                    }
                     System.out.println("____________________________________________________________");
                     System.out.println(" Here are the tasks in your list:");
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                     System.out.println("____________________________________________________________");
-                } else if (input.equals("mark") || input.startsWith("mark ")) {
-                    int index = parseIndex(input, "mark", tasks.size());
-                    tasks.get(index).markAsDone();
+                    break;
+                case MARK:
+                    int markIndex = parseIndex(input, "mark", tasks.size());
+                    tasks.get(markIndex).markAsDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + tasks.get(index));
+                    System.out.println("   " + tasks.get(markIndex));
                     System.out.println("____________________________________________________________");
-                } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-                    int index = parseIndex(input, "unmark", tasks.size());
-                    tasks.get(index).markAsNotDone();
+                    break;
+                case UNMARK:
+                    int unmarkIndex = parseIndex(input, "unmark", tasks.size());
+                    tasks.get(unmarkIndex).markAsNotDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks.get(index));
+                    System.out.println("   " + tasks.get(unmarkIndex));
                     System.out.println("____________________________________________________________");
-                } else if (input.equals("delete") || input.startsWith("delete ")) {
-                    int index = parseIndex(input, "delete", tasks.size());
-                    Task deletedTask = tasks.remove(index);
+                    break;
+                case DELETE:
+                    int deleteIndex = parseIndex(input, "delete", tasks.size());
+                    Task deletedTask = tasks.remove(deleteIndex);
                     printDeleted(deletedTask, tasks.size());
-                } else if (input.equals("todo") || input.startsWith("todo ")) {
+                    break;
+                case TODO:
                     String description = input.length() > 4 ? input.substring(5).trim() : "";
                     if (description.isEmpty()) {
                         throw new ClarryException("OOPS!!! The description of a todo cannot be empty.");
                     }
-                    Task task = new Todo(description);
-                    tasks.add(task);
-                    printAdded(task, tasks.size());
-                } else if (input.equals("deadline") || input.startsWith("deadline ")) {
-                    String rest = input.length() > 8 ? input.substring(9).trim() : "";
-                    String[] parts = rest.split(" /by ", 2);
-                    if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
+                    Task todoTask = new Todo(description);
+                    tasks.add(todoTask);
+                    printAdded(todoTask, tasks.size());
+                    break;
+                case DEADLINE:
+                    String deadlineDetails = input.length() > 8 ? input.substring(9).trim() : "";
+                    String[] deadlineParts = deadlineDetails.split(" /by ", 2);
+                    if (deadlineParts.length != 2 || deadlineParts[0].trim().isEmpty()
+                            || deadlineParts[1].trim().isEmpty()) {
                         throw new ClarryException("OOPS!!! A deadline needs a description and a '/by' date.");
                     }
-                    Task task = new Deadline(parts[0].trim(), parts[1].trim());
-                    tasks.add(task);
-                    printAdded(task, tasks.size());
-                } else if (input.equals("event") || input.startsWith("event ")) {
-                    String rest = input.length() > 5 ? input.substring(6).trim() : "";
-                    String[] fromSplit = rest.split(" /from ", 2);
+                    Task deadlineTask = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
+                    tasks.add(deadlineTask);
+                    printAdded(deadlineTask, tasks.size());
+                    break;
+                case EVENT:
+                    String eventDetails = input.length() > 5 ? input.substring(6).trim() : "";
+                    String[] fromSplit = eventDetails.split(" /from ", 2);
                     String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to ", 2) : new String[0];
                     if (fromSplit.length != 2 || toSplit.length != 2 || fromSplit[0].trim().isEmpty()
                             || toSplit[0].trim().isEmpty() || toSplit[1].trim().isEmpty()) {
                         throw new ClarryException("OOPS!!! An event needs a description, '/from', and '/to' time.");
                     }
-                    Task task = new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
-                    tasks.add(task);
-                    printAdded(task, tasks.size());
-                } else {
-                    throw new ClarryException("OOPS!!! I'm sorry, but I don't know what that means :-(");
+                    Task eventTask = new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
+                    tasks.add(eventTask);
+                    printAdded(eventTask, tasks.size());
+                    break;
+                case UNKNOWN:
+                    throwUnknownCommand();
+                    break;
                 }
             } catch (ClarryException e) {
                 System.out.println("____________________________________________________________");
@@ -101,6 +119,26 @@ public class Clarry {
         }
 
         scanner.close();
+    }
+
+    /**
+     * Extracts the first space-separated word from a command.
+     *
+     * @param input complete user command
+     * @return first command word
+     */
+    private static String getCommandWord(String input) {
+        int firstSpace = input.indexOf(' ');
+        return firstSpace == -1 ? input : input.substring(0, firstSpace);
+    }
+
+    /**
+     * Throws Clarry's standard error for an unsupported command.
+     *
+     * @throws ClarryException always
+     */
+    private static void throwUnknownCommand() throws ClarryException {
+        throw new ClarryException("OOPS!!! I'm sorry, but I don't know what that means :-(");
     }
 
     /**
