@@ -4,7 +4,7 @@ Run each case as a new Clarry session. Expected output includes the startup bann
 
 ## Task types, completion status, and listing
 
-Aim: Verify that todo, deadline, and event tasks have the correct type-specific display, and that marking and unmarking update the stored task.
+Aim: Verify task-type display, completion updates, deletion, and renumbering of the remaining tasks.
 
 ### Inputs
 
@@ -14,6 +14,8 @@ deadline submit assignment /by Friday
 event project meeting /from 2pm /to 4pm
 mark 2
 unmark 2
+list
+delete 2
 list
 bye
 ```
@@ -64,6 +66,16 @@ ____________________________________________________________
  3.[E][ ] project meeting (from: 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] submit assignment (by: Friday)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[E][ ] project meeting (from: 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
  Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
@@ -81,6 +93,8 @@ event meeting /from 2pm
 mark
 mark abc
 mark 1
+delete
+delete 1
 nonsense
 bye
 ```
@@ -115,6 +129,12 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  OOPS!!! Please provide a valid task number.
+____________________________________________________________
+____________________________________________________________
+ OOPS!!! That task number doesn't exist.
+____________________________________________________________
+____________________________________________________________
+ OOPS!!! Please specify which task number to delete.
 ____________________________________________________________
 ____________________________________________________________
  OOPS!!! That task number doesn't exist.

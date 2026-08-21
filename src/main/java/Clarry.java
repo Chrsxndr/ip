@@ -1,5 +1,10 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Provides the command-line interface for the Clarry task manager.
+ */
 public class Clarry {
     public static void main(String[] args) {
         String banner = "  _____ _\n"
@@ -17,8 +22,7 @@ public class Clarry {
         System.out.println("____________________________________________________________");
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
+        List<Task> tasks = new ArrayList<>();
 
         while (true) {
             String input = scanner.nextLine();
@@ -32,32 +36,36 @@ public class Clarry {
                 } else if (input.equals("list")) {
                     System.out.println("____________________________________________________________");
                     System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                     System.out.println("____________________________________________________________");
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
-                    int index = parseIndex(input, "mark", taskCount);
-                    tasks[index].markAsDone();
+                    int index = parseIndex(input, "mark", tasks.size());
+                    tasks.get(index).markAsDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + tasks[index]);
+                    System.out.println("   " + tasks.get(index));
                     System.out.println("____________________________________________________________");
                 } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-                    int index = parseIndex(input, "unmark", taskCount);
-                    tasks[index].markAsNotDone();
+                    int index = parseIndex(input, "unmark", tasks.size());
+                    tasks.get(index).markAsNotDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks[index]);
+                    System.out.println("   " + tasks.get(index));
                     System.out.println("____________________________________________________________");
+                } else if (input.equals("delete") || input.startsWith("delete ")) {
+                    int index = parseIndex(input, "delete", tasks.size());
+                    Task deletedTask = tasks.remove(index);
+                    printDeleted(deletedTask, tasks.size());
                 } else if (input.equals("todo") || input.startsWith("todo ")) {
                     String description = input.length() > 4 ? input.substring(5).trim() : "";
                     if (description.isEmpty()) {
                         throw new ClarryException("OOPS!!! The description of a todo cannot be empty.");
                     }
                     Task task = new Todo(description);
-                    tasks[taskCount++] = task;
-                    printAdded(task, taskCount);
+                    tasks.add(task);
+                    printAdded(task, tasks.size());
                 } else if (input.equals("deadline") || input.startsWith("deadline ")) {
                     String rest = input.length() > 8 ? input.substring(9).trim() : "";
                     String[] parts = rest.split(" /by ", 2);
@@ -65,8 +73,8 @@ public class Clarry {
                         throw new ClarryException("OOPS!!! A deadline needs a description and a '/by' date.");
                     }
                     Task task = new Deadline(parts[0].trim(), parts[1].trim());
-                    tasks[taskCount++] = task;
-                    printAdded(task, taskCount);
+                    tasks.add(task);
+                    printAdded(task, tasks.size());
                 } else if (input.equals("event") || input.startsWith("event ")) {
                     String rest = input.length() > 5 ? input.substring(6).trim() : "";
                     String[] fromSplit = rest.split(" /from ", 2);
@@ -76,8 +84,8 @@ public class Clarry {
                         throw new ClarryException("OOPS!!! An event needs a description, '/from', and '/to' time.");
                     }
                     Task task = new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
-                    tasks[taskCount++] = task;
-                    printAdded(task, taskCount);
+                    tasks.add(task);
+                    printAdded(task, tasks.size());
                 } else {
                     throw new ClarryException("OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }
@@ -96,7 +104,7 @@ public class Clarry {
     }
 
     /**
-     * Converts a task number in a mark or unmark command to a zero-based index.
+     * Converts a task number in a task-index command to a zero-based index.
      *
      * @param input complete user command
      * @param command command name
@@ -116,10 +124,30 @@ public class Clarry {
         }
         return index;
     }
-    private static void printAdded(Task t, int taskCount) {
+    /**
+     * Prints confirmation that a task was added.
+     *
+     * @param task task that was added
+     * @param taskCount current number of tasks
+     */
+    private static void printAdded(Task task, int taskCount) {
         System.out.println("____________________________________________________________");
         System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + t);
+        System.out.println("   " + task);
+        System.out.println(" Now you have " + taskCount + " tasks in the list.");
+        System.out.println("____________________________________________________________");
+    }
+
+    /**
+     * Prints confirmation that a task was deleted.
+     *
+     * @param task task that was deleted
+     * @param taskCount current number of tasks
+     */
+    private static void printDeleted(Task task, int taskCount) {
+        System.out.println("____________________________________________________________");
+        System.out.println(" Noted. I've removed this task:");
+        System.out.println("   " + task);
         System.out.println(" Now you have " + taskCount + " tasks in the list.");
         System.out.println("____________________________________________________________");
     }
