@@ -1,6 +1,6 @@
 # Clarry UI test plan
 
-Run each case as a new Clarry session. Expected output includes the startup banner and all responses in the session.
+Run each case as a new Clarry session. Before each case, remove `data/clarry.txt` so saved tasks from a previous session do not affect the result. Expected output includes the startup banner and all responses in the session.
 
 ## Task types, completion status, and listing
 

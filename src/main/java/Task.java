@@ -43,4 +43,21 @@ public abstract class Task {
         return description;
     }
 
+    /**
+     * Returns whether this task has been completed.
+     *
+     * @return {@code true} if this task is done
+     */
+    public boolean isDone() {
+        return isDone;
+    }
+
+    /**
+     * Converts this task to the format used in Clarry's save file.
+     *
+     * @return pipe-separated task data for a todo task
+     */
+    public String toFileFormat() {
+        return "T | " + (isDone ? "1" : "0") + " | " + description;
+    }
 }
