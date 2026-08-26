@@ -11,10 +11,11 @@ Aim: Verify task-type display, completion updates, deletion, and renumbering of 
 ```text
 todo read book
 deadline submit assignment /by 2019-10-15
-event project meeting /from 2pm /to 4pm
+event project meeting /from 2019-10-15 14:00 /to 2019-10-16 16:00
 mark 2
 unmark 2
 list
+on 2019-10-16
 delete 2
 list
 bye
@@ -48,7 +49,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] project meeting (from: 2pm to: 4pm)
+   [E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
  Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -63,7 +64,11 @@ ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] read book
  2.[D][ ] submit assignment (by: Oct 15 2019)
- 3.[E][ ] project meeting (from: 2pm to: 4pm)
+ 3.[E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks on 2019-10-16:
+ 1.[E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
 ____________________________________________________________
 ____________________________________________________________
  Noted. I've removed this task:
@@ -73,7 +78,7 @@ ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] read book
- 2.[E][ ] project meeting (from: 2pm to: 4pm)
+ 2.[E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
 ____________________________________________________________
 ____________________________________________________________
  Bye. Hope to see you again soon!
@@ -91,6 +96,9 @@ todo
 deadline return book
 deadline return book /by Friday
 event meeting /from 2pm
+event meeting /from 2019-02-29 14:00 /to 2019-02-29 16:00
+event meeting /from 2019-10-15 14:00 /to 2019-10-15 13:00
+on Friday
 mark
 mark abc
 mark 1
@@ -126,7 +134,16 @@ ____________________________________________________________
  OOPS!!! Please use yyyy-mm-dd for the deadline date, e.g. 2019-10-15.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! An event needs a description, '/from', and '/to' time.
+ OOPS!!! An event needs a description, '/from', and '/to' date and time.
+____________________________________________________________
+____________________________________________________________
+ OOPS!!! Please use yyyy-mm-dd HH:mm for event dates, e.g. 2019-10-15 14:00.
+____________________________________________________________
+____________________________________________________________
+ OOPS!!! An event cannot end before it starts.
+____________________________________________________________
+____________________________________________________________
+ OOPS!!! Please use yyyy-mm-dd for the date, e.g. on 2019-10-15.
 ____________________________________________________________
 ____________________________________________________________
  OOPS!!! Please specify which task number to mark.

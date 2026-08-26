@@ -35,4 +35,14 @@ public class Deadline extends Task {
     public String toFileFormat() {
         return "D | " + (isDone() ? "1" : "0") + " | " + getDescription() + " | " + by;
     }
+
+    /**
+     * Returns whether this deadline falls on the specified date.
+     *
+     * @param date date to check
+     * @return whether the deadline is on the date
+     */
+    public boolean occursOn(LocalDate date) {
+        return by.equals(date);
+    }
 }

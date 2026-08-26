@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -56,6 +58,20 @@ public class Clarry {
                     System.out.println(" Here are the tasks in your list:");
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println(" " + (i + 1) + "." + tasks.get(i));
+                    }
+                    System.out.println("____________________________________________________________");
+                    break;
+                case ON:
+                    LocalDate date = parseDate(input, "on");
+                    System.out.println("____________________________________________________________");
+                    System.out.println(" Here are the tasks on " + date + ":");
+                    int displayedTaskCount = 0;
+                    for (Task task : tasks) {
+                        if ((task instanceof Deadline && ((Deadline) task).occursOn(date))
+                                || (task instanceof Event && ((Event) task).occursOn(date))) {
+                            displayedTaskCount++;
+                            System.out.println(" " + displayedTaskCount + "." + task);
+                        }
                     }
                     System.out.println("____________________________________________________________");
                     break;
@@ -118,7 +134,7 @@ public class Clarry {
                     String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to ", 2) : new String[0];
                     if (fromSplit.length != 2 || toSplit.length != 2 || fromSplit[0].trim().isEmpty()
                             || toSplit[0].trim().isEmpty() || toSplit[1].trim().isEmpty()) {
-                        throw new ClarryException("OOPS!!! An event needs a description, '/from', and '/to' time.");
+                        throw new ClarryException("OOPS!!! An event needs a description, '/from', and '/to' date and time.");
                     }
                     Task eventTask = new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
                     tasks.add(eventTask);
@@ -293,6 +309,23 @@ public class Clarry {
             throw new ClarryException("OOPS!!! That task number doesn't exist.");
         }
         return index;
+    }
+
+    /**
+     * Parses the ISO date supplied to a date-filter command.
+     *
+     * @param input complete command input
+     * @param command date-filter command name
+     * @return parsed date
+     * @throws ClarryException if the command does not contain one valid ISO date
+     */
+    private static LocalDate parseDate(String input, String command) throws ClarryException {
+        String dateText = input.length() > command.length() ? input.substring(command.length()).trim() : "";
+        try {
+            return LocalDate.parse(dateText);
+        } catch (DateTimeParseException e) {
+            throw new ClarryException("OOPS!!! Please use yyyy-mm-dd for the date, e.g. on 2019-10-15.");
+        }
     }
     /**
      * Prints confirmation that a task was added.
