@@ -3,8 +3,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Provides the command-line interface for the Clarry task manager.
@@ -23,7 +21,7 @@ public class Clarry {
     /** Starts Clarry's command loop. */
     public void run() {
         ui.showWelcome();
-        List<Task> tasks = loadTasks();
+        TaskList tasks = loadTasks();
 
         commandLoop:
         while (true) {
@@ -42,18 +40,11 @@ public class Clarry {
                     if (!input.equals("list")) {
                         throwUnknownCommand();
                     }
-                    ui.showList(tasks);
+                    ui.showList(tasks.getTasks());
                     break;
                 case ON:
                     LocalDate date = parseDate(input, "on");
-                    List<Task> tasksOnDate = new ArrayList<>();
-                    for (Task task : tasks) {
-                        if ((task instanceof Deadline && ((Deadline) task).occursOn(date))
-                                || (task instanceof Event && ((Event) task).occursOn(date))) {
-                            tasksOnDate.add(task);
-                        }
-                    }
-                    ui.showTasksOnDate(date, tasksOnDate);
+                    ui.showTasksOnDate(date, tasks.getTasksOnDate(date));
                     break;
                 case MARK:
                     int markIndex = parseIndex(input, "mark", tasks.size());
@@ -69,7 +60,7 @@ public class Clarry {
                     break;
                 case DELETE:
                     int deleteIndex = parseIndex(input, "delete", tasks.size());
-                    Task deletedTask = tasks.remove(deleteIndex);
+                    Task deletedTask = tasks.delete(deleteIndex);
                     saveTasks(tasks);
                     ui.showDeleted(deletedTask, tasks.size());
                     break;
@@ -138,7 +129,7 @@ public class Clarry {
      *
      * @param tasks tasks to save
      */
-    private void saveTasks(List<Task> tasks) {
+    private void saveTasks(TaskList tasks) {
         try {
             storage.save(tasks);
         } catch (IOException e) {
@@ -151,16 +142,16 @@ public class Clarry {
      *
      * @return tasks reconstructed from the save file, or an empty list if it is absent
      */
-    private List<Task> loadTasks() {
+    private TaskList loadTasks() {
         try {
             Storage.LoadResult loadResult = storage.load();
             for (int i = 0; i < loadResult.getCorruptedLineCount(); i++) {
                 ui.showCorruptedLineError();
             }
-            return loadResult.getTasks();
+            return new TaskList(loadResult.getTasks());
         } catch (IOException e) {
             ui.showLoadError();
-            return new ArrayList<>();
+            return new TaskList();
         }
     }
 

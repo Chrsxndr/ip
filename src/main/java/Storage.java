@@ -28,7 +28,7 @@ public class Storage {
      * @param tasks tasks to save
      * @throws IOException if the save file or its parent directory cannot be written
      */
-    public void save(List<Task> tasks) throws IOException {
+    public void save(Iterable<Task> tasks) throws IOException {
         File file = dataFile.toFile();
         File parentDirectory = file.getParentFile();
         if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
