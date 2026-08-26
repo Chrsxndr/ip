@@ -9,35 +9,27 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Provides the command-line interface for the Clarry task manager.
  */
 public class Clarry {
     private static final Path DATA_FILE = Paths.get("data", "clarry.txt");
+    private final Ui ui;
 
-    public static void main(String[] args) {
-        String banner = "  _____ _\n"
-                        + " / ____| |\n"
-                        + "| |    | | __ _ _ __ _ __ _   _\n"
-                        + "| |    | |/ _` | '__| '__| | | |\n"
-                        + "| |____| | (_| | |  | |  | |_| |\n"
-                        + " \\_____|_|\\__,_|_|  |_|  \\__,  |\n"
-                        + "                          __/  |\n"
-                        + "                         |____/\n";
-        System.out.println(banner);
-        System.out.println("____________________________________________________________");
-        System.out.println(" Hello! I'm Clarry.");
-        System.out.println(" What can I do for you?");
-        System.out.println("____________________________________________________________");
+    /** Creates Clarry with its console user interface. */
+    public Clarry() {
+        ui = new Ui();
+    }
 
-        Scanner scanner = new Scanner(System.in);
+    /** Starts Clarry's command loop. */
+    public void run() {
+        ui.showWelcome();
         List<Task> tasks = loadTasks();
 
         commandLoop:
         while (true) {
-            String input = scanner.nextLine();
+            String input = ui.readCommand();
 
             try {
                 CommandType commandType = CommandType.fromWord(getCommandWord(input));
@@ -46,58 +38,42 @@ public class Clarry {
                     if (!input.equals("bye")) {
                         throwUnknownCommand();
                     }
-                    System.out.println("____________________________________________________________");
-                    System.out.println(" Bye. Hope to see you again soon!");
-                    System.out.println("____________________________________________________________");
+                    ui.showGoodbye();
                     break commandLoop;
                 case LIST:
                     if (!input.equals("list")) {
                         throwUnknownCommand();
                     }
-                    System.out.println("____________________________________________________________");
-                    System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
-                    }
-                    System.out.println("____________________________________________________________");
+                    ui.showList(tasks);
                     break;
                 case ON:
                     LocalDate date = parseDate(input, "on");
-                    System.out.println("____________________________________________________________");
-                    System.out.println(" Here are the tasks on " + date + ":");
-                    int displayedTaskCount = 0;
+                    List<Task> tasksOnDate = new ArrayList<>();
                     for (Task task : tasks) {
                         if ((task instanceof Deadline && ((Deadline) task).occursOn(date))
                                 || (task instanceof Event && ((Event) task).occursOn(date))) {
-                            displayedTaskCount++;
-                            System.out.println(" " + displayedTaskCount + "." + task);
+                            tasksOnDate.add(task);
                         }
                     }
-                    System.out.println("____________________________________________________________");
+                    ui.showTasksOnDate(date, tasksOnDate);
                     break;
                 case MARK:
                     int markIndex = parseIndex(input, "mark", tasks.size());
                     tasks.get(markIndex).markAsDone();
                     saveTasks(tasks);
-                    System.out.println("____________________________________________________________");
-                    System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + tasks.get(markIndex));
-                    System.out.println("____________________________________________________________");
+                    ui.showMarked(tasks.get(markIndex));
                     break;
                 case UNMARK:
                     int unmarkIndex = parseIndex(input, "unmark", tasks.size());
                     tasks.get(unmarkIndex).markAsNotDone();
                     saveTasks(tasks);
-                    System.out.println("____________________________________________________________");
-                    System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks.get(unmarkIndex));
-                    System.out.println("____________________________________________________________");
+                    ui.showUnmarked(tasks.get(unmarkIndex));
                     break;
                 case DELETE:
                     int deleteIndex = parseIndex(input, "delete", tasks.size());
                     Task deletedTask = tasks.remove(deleteIndex);
                     saveTasks(tasks);
-                    printDeleted(deletedTask, tasks.size());
+                    ui.showDeleted(deletedTask, tasks.size());
                     break;
                 case TODO:
                     String description = input.length() > 4 ? input.substring(5).trim() : "";
@@ -107,7 +83,7 @@ public class Clarry {
                     Task todoTask = new Todo(description);
                     tasks.add(todoTask);
                     saveTasks(tasks);
-                    printAdded(todoTask, tasks.size());
+                    ui.showAdded(todoTask, tasks.size());
                     break;
                 case DEADLINE:
                     String deadlineDetails = input.length() > 8 ? input.substring(9).trim() : "";
@@ -126,7 +102,7 @@ public class Clarry {
                     Task deadlineTask = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
                     tasks.add(deadlineTask);
                     saveTasks(tasks);
-                    printAdded(deadlineTask, tasks.size());
+                    ui.showAdded(deadlineTask, tasks.size());
                     break;
                 case EVENT:
                     String eventDetails = input.length() > 5 ? input.substring(6).trim() : "";
@@ -139,24 +115,24 @@ public class Clarry {
                     Task eventTask = new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
                     tasks.add(eventTask);
                     saveTasks(tasks);
-                    printAdded(eventTask, tasks.size());
+                    ui.showAdded(eventTask, tasks.size());
                     break;
                 case UNKNOWN:
                     throwUnknownCommand();
                     break;
                 }
             } catch (ClarryException e) {
-                System.out.println("____________________________________________________________");
-                System.out.println(" " + e.getMessage());
-                System.out.println("____________________________________________________________");
+                ui.showError(e.getMessage());
             } catch (NumberFormatException e) {
-                System.out.println("____________________________________________________________");
-                System.out.println(" OOPS!!! Please provide a valid task number.");
-                System.out.println("____________________________________________________________");
+                ui.showError("OOPS!!! Please provide a valid task number.");
             }
         }
 
-        scanner.close();
+    }
+
+    /** Starts Clarry from the command line. */
+    public static void main(String[] args) {
+        new Clarry().run();
     }
 
     /**
@@ -164,11 +140,11 @@ public class Clarry {
      *
      * @param tasks tasks to save
      */
-    private static void saveTasks(List<Task> tasks) {
+    private void saveTasks(List<Task> tasks) {
         File file = DATA_FILE.toFile();
         File parentDirectory = file.getParentFile();
         if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
-            printSaveError();
+            ui.showSaveError();
             return;
         }
 
@@ -177,7 +153,7 @@ public class Clarry {
                 writer.write(task.toFileFormat() + System.lineSeparator());
             }
         } catch (IOException e) {
-            printSaveError();
+            ui.showSaveError();
         }
     }
 
@@ -186,7 +162,7 @@ public class Clarry {
      *
      * @return tasks reconstructed from the save file, or an empty list if it is absent
      */
-    private static List<Task> loadTasks() {
+    private List<Task> loadTasks() {
         List<Task> tasks = new ArrayList<>();
         File file = DATA_FILE.toFile();
         if (!file.exists()) {
@@ -199,13 +175,11 @@ public class Clarry {
                 try {
                     tasks.add(parseSavedTask(line));
                 } catch (Exception e) {
-                    printCorruptedLineError();
+                    ui.showCorruptedLineError();
                 }
             }
         } catch (IOException e) {
-            System.out.println("____________________________________________________________");
-            System.out.println(" OOPS!!! Could not load saved tasks.");
-            System.out.println("____________________________________________________________");
+            ui.showLoadError();
         }
         return tasks;
     }
@@ -253,20 +227,6 @@ public class Clarry {
             task.markAsDone();
         }
         return task;
-    }
-
-    /** Prints Clarry's message for a failed save operation. */
-    private static void printSaveError() {
-        System.out.println("____________________________________________________________");
-        System.out.println(" OOPS!!! Could not save tasks to disk.");
-        System.out.println("____________________________________________________________");
-    }
-
-    /** Prints Clarry's message for a malformed saved task. */
-    private static void printCorruptedLineError() {
-        System.out.println("____________________________________________________________");
-        System.out.println(" OOPS!!! Skipping a corrupted line in the save file.");
-        System.out.println("____________________________________________________________");
     }
 
     /**
@@ -326,32 +286,5 @@ public class Clarry {
         } catch (DateTimeParseException e) {
             throw new ClarryException("OOPS!!! Please use yyyy-mm-dd for the date, e.g. on 2019-10-15.");
         }
-    }
-    /**
-     * Prints confirmation that a task was added.
-     *
-     * @param task task that was added
-     * @param taskCount current number of tasks
-     */
-    private static void printAdded(Task task, int taskCount) {
-        System.out.println("____________________________________________________________");
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + taskCount + " tasks in the list.");
-        System.out.println("____________________________________________________________");
-    }
-
-    /**
-     * Prints confirmation that a task was deleted.
-     *
-     * @param task task that was deleted
-     * @param taskCount current number of tasks
-     */
-    private static void printDeleted(Task task, int taskCount) {
-        System.out.println("____________________________________________________________");
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + taskCount + " tasks in the list.");
-        System.out.println("____________________________________________________________");
     }
 }
