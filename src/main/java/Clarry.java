@@ -95,10 +95,17 @@ public class Clarry {
                     break;
                 case DEADLINE:
                     String deadlineDetails = input.length() > 8 ? input.substring(9).trim() : "";
+                    if (deadlineDetails.isEmpty()) {
+                        throw new ClarryException("OOPS!!! The description of a deadline cannot be empty.");
+                    }
+                    if (!deadlineDetails.contains(" /by ")) {
+                        throw new ClarryException(
+                                "OOPS!!! A deadline needs a '/by' date, e.g. deadline return book /by 2019-10-15");
+                    }
                     String[] deadlineParts = deadlineDetails.split(" /by ", 2);
                     if (deadlineParts.length != 2 || deadlineParts[0].trim().isEmpty()
                             || deadlineParts[1].trim().isEmpty()) {
-                        throw new ClarryException("OOPS!!! A deadline needs a description and a '/by' date.");
+                        throw new ClarryException("OOPS!!! A deadline needs both a description and a '/by' date.");
                     }
                     Task deadlineTask = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
                     tasks.add(deadlineTask);
@@ -175,7 +182,7 @@ public class Clarry {
             while ((line = reader.readLine()) != null) {
                 try {
                     tasks.add(parseSavedTask(line));
-                } catch (IllegalArgumentException e) {
+                } catch (Exception e) {
                     printCorruptedLineError();
                 }
             }
@@ -192,9 +199,10 @@ public class Clarry {
      *
      * @param line saved task data
      * @return reconstructed task
-     * @throws IllegalArgumentException if the saved data is invalid
+     * @throws IllegalArgumentException if the saved data is structurally invalid
+     * @throws ClarryException if a saved deadline date is invalid
      */
-    private static Task parseSavedTask(String line) {
+    private static Task parseSavedTask(String line) throws ClarryException {
         String[] parts = line.split(" \\| ", -1);
         if (parts.length < 3 || !(parts[1].equals("0") || parts[1].equals("1"))
                 || parts[2].isEmpty()) {

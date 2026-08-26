@@ -10,7 +10,7 @@ Aim: Verify task-type display, completion updates, deletion, and renumbering of 
 
 ```text
 todo read book
-deadline submit assignment /by Friday
+deadline submit assignment /by 2019-10-15
 event project meeting /from 2pm /to 4pm
 mark 2
 unmark 2
@@ -43,7 +43,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
-   [D][ ] submit assignment (by: Friday)
+   [D][ ] submit assignment (by: Oct 15 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -53,21 +53,21 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Nice! I've marked this task as done:
-   [D][X] submit assignment (by: Friday)
+   [D][X] submit assignment (by: Oct 15 2019)
 ____________________________________________________________
 ____________________________________________________________
  OK, I've marked this task as not done yet:
-   [D][ ] submit assignment (by: Friday)
+   [D][ ] submit assignment (by: Oct 15 2019)
 ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] read book
- 2.[D][ ] submit assignment (by: Friday)
+ 2.[D][ ] submit assignment (by: Oct 15 2019)
  3.[E][ ] project meeting (from: 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
  Noted. I've removed this task:
-   [D][ ] submit assignment (by: Friday)
+   [D][ ] submit assignment (by: Oct 15 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -89,6 +89,7 @@ Aim: Verify that invalid commands and incomplete task details show an error mess
 ```text
 todo
 deadline return book
+deadline return book /by Friday
 event meeting /from 2pm
 mark
 mark abc
@@ -119,7 +120,10 @@ ____________________________________________________________
  OOPS!!! The description of a todo cannot be empty.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! A deadline needs a description and a '/by' date.
+ OOPS!!! A deadline needs a '/by' date, e.g. deadline return book /by 2019-10-15
+____________________________________________________________
+____________________________________________________________
+ OOPS!!! Please use yyyy-mm-dd for the deadline date, e.g. 2019-10-15.
 ____________________________________________________________
 ____________________________________________________________
  OOPS!!! An event needs a description, '/from', and '/to' time.
