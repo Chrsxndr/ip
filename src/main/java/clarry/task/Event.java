@@ -1,8 +1,12 @@
+package clarry.task;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+
+import clarry.ClarryException;
 
 /**
  * Represents a task scheduled between a start and end time.

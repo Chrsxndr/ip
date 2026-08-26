@@ -1,7 +1,16 @@
+package clarry;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+
+import clarry.parser.CommandType;
+import clarry.parser.Parser;
+import clarry.storage.Storage;
+import clarry.task.Task;
+import clarry.task.TaskList;
+import clarry.ui.Ui;
 
 /**
  * Provides the command-line interface for the Clarry task manager.

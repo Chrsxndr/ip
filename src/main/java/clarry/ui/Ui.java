@@ -1,6 +1,10 @@
+package clarry.ui;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
+
+import clarry.task.Task;
 
 /**
  * Handles all console input and output for Clarry.
