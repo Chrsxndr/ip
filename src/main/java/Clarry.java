@@ -1,7 +1,3 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,10 +12,12 @@ import java.util.List;
 public class Clarry {
     private static final Path DATA_FILE = Paths.get("data", "clarry.txt");
     private final Ui ui;
+    private final Storage storage;
 
     /** Creates Clarry with its console user interface. */
     public Clarry() {
         ui = new Ui();
+        storage = new Storage(DATA_FILE);
     }
 
     /** Starts Clarry's command loop. */
@@ -141,17 +139,8 @@ public class Clarry {
      * @param tasks tasks to save
      */
     private void saveTasks(List<Task> tasks) {
-        File file = DATA_FILE.toFile();
-        File parentDirectory = file.getParentFile();
-        if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
-            ui.showSaveError();
-            return;
-        }
-
-        try (FileWriter writer = new FileWriter(file)) {
-            for (Task task : tasks) {
-                writer.write(task.toFileFormat() + System.lineSeparator());
-            }
+        try {
+            storage.save(tasks);
         } catch (IOException e) {
             ui.showSaveError();
         }
@@ -163,70 +152,16 @@ public class Clarry {
      * @return tasks reconstructed from the save file, or an empty list if it is absent
      */
     private List<Task> loadTasks() {
-        List<Task> tasks = new ArrayList<>();
-        File file = DATA_FILE.toFile();
-        if (!file.exists()) {
-            return tasks;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                try {
-                    tasks.add(parseSavedTask(line));
-                } catch (Exception e) {
-                    ui.showCorruptedLineError();
-                }
+        try {
+            Storage.LoadResult loadResult = storage.load();
+            for (int i = 0; i < loadResult.getCorruptedLineCount(); i++) {
+                ui.showCorruptedLineError();
             }
+            return loadResult.getTasks();
         } catch (IOException e) {
             ui.showLoadError();
+            return new ArrayList<>();
         }
-        return tasks;
-    }
-
-    /**
-     * Reconstructs one task from a line in Clarry's save-file format.
-     *
-     * @param line saved task data
-     * @return reconstructed task
-     * @throws IllegalArgumentException if the saved data is structurally invalid
-     * @throws ClarryException if a saved deadline date is invalid
-     */
-    private static Task parseSavedTask(String line) throws ClarryException {
-        String[] parts = line.split(" \\| ", -1);
-        if (parts.length < 3 || !(parts[1].equals("0") || parts[1].equals("1"))
-                || parts[2].isEmpty()) {
-            throw new IllegalArgumentException("Invalid task data");
-        }
-
-        Task task;
-        switch (parts[0]) {
-        case "T":
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Invalid todo data");
-            }
-            task = new Todo(parts[2]);
-            break;
-        case "D":
-            if (parts.length != 4 || parts[3].isEmpty()) {
-                throw new IllegalArgumentException("Invalid deadline data");
-            }
-            task = new Deadline(parts[2], parts[3]);
-            break;
-        case "E":
-            if (parts.length != 5 || parts[3].isEmpty() || parts[4].isEmpty()) {
-                throw new IllegalArgumentException("Invalid event data");
-            }
-            task = new Event(parts[2], parts[3], parts[4]);
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown task type");
-        }
-
-        if (parts[1].equals("1")) {
-            task.markAsDone();
-        }
-        return task;
     }
 
     /**
