@@ -1,3 +1,10 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -6,6 +13,8 @@ import java.util.Scanner;
  * Provides the command-line interface for the Clarry task manager.
  */
 public class Clarry {
+    private static final Path DATA_FILE = Paths.get("data", "clarry.txt");
+
     public static void main(String[] args) {
         String banner = "  _____ _\n"
                         + " / ____| |\n"
@@ -22,7 +31,7 @@ public class Clarry {
         System.out.println("____________________________________________________________");
 
         Scanner scanner = new Scanner(System.in);
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = loadTasks();
 
         commandLoop:
         while (true) {
@@ -53,6 +62,7 @@ public class Clarry {
                 case MARK:
                     int markIndex = parseIndex(input, "mark", tasks.size());
                     tasks.get(markIndex).markAsDone();
+                    saveTasks(tasks);
                     System.out.println("____________________________________________________________");
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(markIndex));
@@ -61,6 +71,7 @@ public class Clarry {
                 case UNMARK:
                     int unmarkIndex = parseIndex(input, "unmark", tasks.size());
                     tasks.get(unmarkIndex).markAsNotDone();
+                    saveTasks(tasks);
                     System.out.println("____________________________________________________________");
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks.get(unmarkIndex));
@@ -69,6 +80,7 @@ public class Clarry {
                 case DELETE:
                     int deleteIndex = parseIndex(input, "delete", tasks.size());
                     Task deletedTask = tasks.remove(deleteIndex);
+                    saveTasks(tasks);
                     printDeleted(deletedTask, tasks.size());
                     break;
                 case TODO:
@@ -78,6 +90,7 @@ public class Clarry {
                     }
                     Task todoTask = new Todo(description);
                     tasks.add(todoTask);
+                    saveTasks(tasks);
                     printAdded(todoTask, tasks.size());
                     break;
                 case DEADLINE:
@@ -89,6 +102,7 @@ public class Clarry {
                     }
                     Task deadlineTask = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
                     tasks.add(deadlineTask);
+                    saveTasks(tasks);
                     printAdded(deadlineTask, tasks.size());
                     break;
                 case EVENT:
@@ -101,6 +115,7 @@ public class Clarry {
                     }
                     Task eventTask = new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
                     tasks.add(eventTask);
+                    saveTasks(tasks);
                     printAdded(eventTask, tasks.size());
                     break;
                 case UNKNOWN:
@@ -119,6 +134,93 @@ public class Clarry {
         }
 
         scanner.close();
+    }
+
+    /**
+     * Saves all tasks to Clarry's relative data file.
+     *
+     * @param tasks tasks to save
+     */
+    private static void saveTasks(List<Task> tasks) {
+        File file = DATA_FILE.toFile();
+        File parentDirectory = file.getParentFile();
+        if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
+            printSaveError();
+            return;
+        }
+
+        try (FileWriter writer = new FileWriter(file)) {
+            for (Task task : tasks) {
+                writer.write(task.toFileFormat() + System.lineSeparator());
+            }
+        } catch (IOException e) {
+            printSaveError();
+        }
+    }
+
+    /**
+     * Loads the saved tasks from Clarry's save file.
+     *
+     * @return tasks reconstructed from the save file, or an empty list if it is absent
+     */
+    private static List<Task> loadTasks() {
+        List<Task> tasks = new ArrayList<>();
+        File file = DATA_FILE.toFile();
+        if (!file.exists()) {
+            return tasks;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Task task = parseSavedTask(line);
+                if (task != null) {
+                    tasks.add(task);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("____________________________________________________________");
+            System.out.println(" OOPS!!! Could not load saved tasks.");
+            System.out.println("____________________________________________________________");
+        }
+        return tasks;
+    }
+
+    /**
+     * Reconstructs one task from a line in Clarry's save-file format.
+     *
+     * @param line saved task data
+     * @return reconstructed task, or {@code null} for an unknown task type
+     */
+    private static Task parseSavedTask(String line) {
+        String[] parts = line.split(" \\| ");
+
+        Task task;
+        switch (parts[0]) {
+        case "T":
+            task = new Todo(parts[2]);
+            break;
+        case "D":
+            task = new Deadline(parts[2], parts[3]);
+            break;
+        case "E":
+            task = new Event(parts[2], parts[3], parts[4]);
+            break;
+        default:
+            return null;
+        }
+
+        if (parts[1].equals("1")) {
+            task.markAsDone();
+        }
+        return task;
+    }
+
+    /** Prints Clarry's message for a failed save operation. */
+    private static void printSaveError() {
+        System.out.println("____________________________________________________________");
+        System.out.println(" OOPS!!! Could not save tasks to disk.");
+        System.out.println("____________________________________________________________");
     }
 
     /**
