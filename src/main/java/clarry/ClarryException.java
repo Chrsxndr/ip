@@ -1,3 +1,5 @@
+package clarry;
+
 /**
  * Represents an error caused by an invalid Clarry command or command format.
  */

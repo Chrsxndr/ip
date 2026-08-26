@@ -1,6 +1,10 @@
+package clarry.task;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import clarry.ClarryException;
 
 /**
  * Represents a task that must be completed by a deadline.

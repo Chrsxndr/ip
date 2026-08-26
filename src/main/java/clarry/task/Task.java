@@ -1,3 +1,5 @@
+package clarry.task;
+
 /**
  * Represents the shared information and behaviour of a task.
  */

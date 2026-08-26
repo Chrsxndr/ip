@@ -1,5 +1,12 @@
+package clarry.parser;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+
+import clarry.ClarryException;
+import clarry.task.Deadline;
+import clarry.task.Event;
+import clarry.task.Todo;
 
 /**
  * Parses and validates commands entered by the user.

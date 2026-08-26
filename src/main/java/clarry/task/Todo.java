@@ -1,3 +1,5 @@
+package clarry.task;
+
 /**
  * Represents a basic task without a date or time.
  */

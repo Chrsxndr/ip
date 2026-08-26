@@ -1,3 +1,5 @@
+package clarry.parser;
+
 /**
  * Represents the commands understood by Clarry.
  */
