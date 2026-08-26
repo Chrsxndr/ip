@@ -159,7 +159,7 @@ public class Clarry {
     }
 
     /**
-     * Loads the saved tasks from Clarry's save file.
+     * Loads the saved tasks, skipping any corrupted save-file lines.
      *
      * @return tasks reconstructed from the save file, or an empty list if it is absent
      */
@@ -173,9 +173,10 @@ public class Clarry {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                Task task = parseSavedTask(line);
-                if (task != null) {
-                    tasks.add(task);
+                try {
+                    tasks.add(parseSavedTask(line));
+                } catch (IllegalArgumentException e) {
+                    printCorruptedLineError();
                 }
             }
         } catch (IOException e) {
@@ -190,24 +191,38 @@ public class Clarry {
      * Reconstructs one task from a line in Clarry's save-file format.
      *
      * @param line saved task data
-     * @return reconstructed task, or {@code null} for an unknown task type
+     * @return reconstructed task
+     * @throws IllegalArgumentException if the saved data is invalid
      */
     private static Task parseSavedTask(String line) {
-        String[] parts = line.split(" \\| ");
+        String[] parts = line.split(" \\| ", -1);
+        if (parts.length < 3 || !(parts[1].equals("0") || parts[1].equals("1"))
+                || parts[2].isEmpty()) {
+            throw new IllegalArgumentException("Invalid task data");
+        }
 
         Task task;
         switch (parts[0]) {
         case "T":
+            if (parts.length != 3) {
+                throw new IllegalArgumentException("Invalid todo data");
+            }
             task = new Todo(parts[2]);
             break;
         case "D":
+            if (parts.length != 4 || parts[3].isEmpty()) {
+                throw new IllegalArgumentException("Invalid deadline data");
+            }
             task = new Deadline(parts[2], parts[3]);
             break;
         case "E":
+            if (parts.length != 5 || parts[3].isEmpty() || parts[4].isEmpty()) {
+                throw new IllegalArgumentException("Invalid event data");
+            }
             task = new Event(parts[2], parts[3], parts[4]);
             break;
         default:
-            return null;
+            throw new IllegalArgumentException("Unknown task type");
         }
 
         if (parts[1].equals("1")) {
@@ -220,6 +235,13 @@ public class Clarry {
     private static void printSaveError() {
         System.out.println("____________________________________________________________");
         System.out.println(" OOPS!!! Could not save tasks to disk.");
+        System.out.println("____________________________________________________________");
+    }
+
+    /** Prints Clarry's message for a malformed saved task. */
+    private static void printCorruptedLineError() {
+        System.out.println("____________________________________________________________");
+        System.out.println(" OOPS!!! Skipping a corrupted line in the save file.");
         System.out.println("____________________________________________________________");
     }
 
