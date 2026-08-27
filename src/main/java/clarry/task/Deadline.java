@@ -40,6 +40,11 @@ public class Deadline extends Task {
         return "[D][" + getStatusIcon() + "] " + getDescription() + " (by: " + by.format(outputFormat) + ")";
     }
 
+    /**
+     * Returns this deadline in Clarry's persistent storage format.
+     *
+     * @return pipe-separated deadline data
+     */
     @Override
     public String toFileFormat() {
         return "D | " + (isDone() ? "1" : "0") + " | " + getDescription() + " | " + by;

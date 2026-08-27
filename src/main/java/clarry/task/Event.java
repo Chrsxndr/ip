@@ -53,6 +53,11 @@ public class Event extends Task {
                 + " (from: " + from.format(OUTPUT_FORMAT) + " to: " + to.format(OUTPUT_FORMAT) + ")";
     }
 
+    /**
+     * Returns this event in Clarry's persistent storage format.
+     *
+     * @return pipe-separated event data
+     */
     @Override
     public String toFileFormat() {
         return "E | " + (isDone() ? "1" : "0") + " | " + getDescription()
