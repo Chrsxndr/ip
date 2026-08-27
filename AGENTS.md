@@ -37,3 +37,8 @@ After each Java code update that can affect Clarry's console behaviour, update `
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
+
+## Coding standards
+
+Apply `.codex/skills/seedu-java-coding-standard/SKILL.md` to every Java code change.
+Apply `.codex/skills/seedu-git-standard/SKILL.md` when proposing or creating commits.
