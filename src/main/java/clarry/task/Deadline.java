@@ -29,12 +29,22 @@ public class Deadline extends Task {
         }
     }
 
+    /**
+     * Returns this deadline in the format shown in Clarry's task list.
+     *
+     * @return formatted deadline description, completion status, and due date
+     */
     @Override
     public String toString() {
         DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy");
         return "[D][" + getStatusIcon() + "] " + getDescription() + " (by: " + by.format(outputFormat) + ")";
     }
 
+    /**
+     * Returns this deadline in Clarry's persistent storage format.
+     *
+     * @return pipe-separated deadline data
+     */
     @Override
     public String toFileFormat() {
         return "D | " + (isDone() ? "1" : "0") + " | " + getDescription() + " | " + by;

@@ -13,11 +13,21 @@ public class Todo extends Task {
         super(description);
     }
 
+    /**
+     * Returns this todo in the format shown in Clarry's task list.
+     *
+     * @return formatted todo description and completion status
+     */
     @Override
     public String toString() {
         return "[T][" + getStatusIcon() + "] " + getDescription();
     }
 
+    /**
+     * Returns this todo in Clarry's persistent storage format.
+     *
+     * @return pipe-separated todo data
+     */
     @Override
     public String toFileFormat() {
         return "T | " + (isDone() ? "1" : "0") + " | " + getDescription();
