@@ -56,6 +56,10 @@ public class Clarry {
                     LocalDate date = parser.parseDate(input);
                     ui.showTasksOnDate(date, tasks.getTasksOnDate(date));
                     break;
+                case FIND:
+                    String keyword = parser.parseFindKeyword(input);
+                    ui.showFoundTasks(tasks.find(keyword));
+                    break;
                 case MARK:
                     int markIndex = parser.parseIndex(input, "mark", tasks.size());
                     tasks.get(markIndex).markAsDone();

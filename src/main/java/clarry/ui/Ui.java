@@ -72,6 +72,16 @@ public class Ui {
         showDivider();
     }
 
+    /** Displays tasks whose descriptions match a search keyword. */
+    public void showFoundTasks(List<Task> tasks) {
+        showDivider();
+        System.out.println(" Here are the matching tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + tasks.get(i));
+        }
+        showDivider();
+    }
+
     /** Displays a task addition confirmation. */
     public void showAdded(Task task, int taskCount) {
         showDivider();

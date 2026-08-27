@@ -130,6 +130,21 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the keyword supplied to a {@code find} command.
+     *
+     * @param input complete find command
+     * @return non-empty search keyword
+     * @throws ClarryException if the command does not contain a keyword
+     */
+    public String parseFindKeyword(String input) throws ClarryException {
+        String keyword = input.length() > 4 ? input.substring(5).trim() : "";
+        if (keyword.isEmpty()) {
+            throw new ClarryException("OOPS!!! Please specify a keyword to find.");
+        }
+        return keyword;
+    }
+
     /** Throws Clarry's standard error for an unsupported command. */
     public void throwUnknownCommand() throws ClarryException {
         throw new ClarryException("OOPS!!! I'm sorry, but I don't know what that means :-(");
