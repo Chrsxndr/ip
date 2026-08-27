@@ -38,4 +38,20 @@ class TaskListTest {
                 () -> taskList.getTasks().add(new Todo("read book")));
         assertEquals(1, taskList.size());
     }
+
+    @Test
+    void find_caseInsensitiveKeyword_returnsMatchingTasksInOrder() throws ClarryException {
+        Todo firstMatch = new Todo("Read the book");
+        Todo secondMatch = new Todo("Return the BOOK");
+        TaskList taskList = new TaskList(List.of(firstMatch, new Todo("Buy milk"), secondMatch));
+
+        assertEquals(List.of(firstMatch, secondMatch), taskList.find("book"));
+    }
+
+    @Test
+    void find_noMatchingDescriptions_returnsEmptyList() throws ClarryException {
+        TaskList taskList = new TaskList(List.of(new Todo("Buy milk")));
+
+        assertEquals(List.of(), taskList.find("book"));
+    }
 }
