@@ -16,6 +16,7 @@ class ParserTest {
     @Test
     void parseCommandType_knownAndUnknownCommands_returnsExpectedTypes() {
         assertEquals(CommandType.TODO, parser.parseCommandType("todo read book"));
+        assertEquals(CommandType.FIND, parser.parseCommandType("find book"));
         assertEquals(CommandType.UNKNOWN, parser.parseCommandType("dance"));
     }
 
@@ -43,5 +44,15 @@ class ParserTest {
     @Test
     void parseIndex_outOfRange_throwsClarryException() {
         assertThrows(ClarryException.class, () -> parser.parseIndex("delete 3", "delete", 2));
+    }
+
+    @Test
+    void parseFindKeyword_validInput_returnsTrimmedKeyword() throws ClarryException {
+        assertEquals("read book", parser.parseFindKeyword("find   read book"));
+    }
+
+    @Test
+    void parseFindKeyword_missingKeyword_throwsClarryException() {
+        assertThrows(ClarryException.class, () -> parser.parseFindKeyword("find"));
     }
 }
