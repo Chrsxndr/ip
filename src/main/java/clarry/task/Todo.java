@@ -13,6 +13,11 @@ public class Todo extends Task {
         super(description);
     }
 
+    /**
+     * Returns this todo in the format shown in Clarry's task list.
+     *
+     * @return formatted todo description and completion status
+     */
     @Override
     public String toString() {
         return "[T][" + getStatusIcon() + "] " + getDescription();

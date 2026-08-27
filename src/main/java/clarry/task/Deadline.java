@@ -29,6 +29,11 @@ public class Deadline extends Task {
         }
     }
 
+    /**
+     * Returns this deadline in the format shown in Clarry's task list.
+     *
+     * @return formatted deadline description, completion status, and due date
+     */
     @Override
     public String toString() {
         DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("MMM dd yyyy");

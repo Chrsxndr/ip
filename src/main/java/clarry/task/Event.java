@@ -42,6 +42,11 @@ public class Event extends Task {
         }
     }
 
+    /**
+     * Returns this event in the format shown in Clarry's task list.
+     *
+     * @return formatted event description, completion status, and schedule
+     */
     @Override
     public String toString() {
         return "[E][" + getStatusIcon() + "] " + getDescription()
