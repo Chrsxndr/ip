@@ -7,12 +7,16 @@ Clarry is a simple command-line task manager written in Java. It helps you keep 
 - Java Development Kit (JDK) 25
 - IntelliJ IDEA (recommended)
 
-## Getting started
+## Running in IntelliJ IDEA
 
 1. Open IntelliJ IDEA and select **File > Open**.
-1. Choose this project folder and accept the default import options.
-1. Configure the project SDK to use **JDK 25**. Set the project language level to **SDK default**.
-1. Open [Clarry.java](src/main/java/Clarry.java), then right-click it and choose **Run `Clarry.main()`**.
+2. Choose this project folder and import it as a Gradle project when prompted.
+3. Configure the project SDK to use **JDK 25** and set the language level to **SDK default**.
+4. Open [Clarry.java](src/main/java/clarry/Clarry.java), then click the green arrow beside the `main` method.
+
+The fully qualified main class is `clarry.Clarry`. If IntelliJ reports that it cannot find `Clarry`, open
+**Run > Edit Configurations** and set **Main class** to `clarry.Clarry`. Also ensure that the project module is
+selected under **Use classpath of module**.
 
 You should see Clarry's welcome banner in the Run console. Type a command and press Enter. Enter `bye` when you are finished.
 
@@ -32,15 +36,18 @@ You should see Clarry's welcome banner in the Run console. Type a command and pr
 | Command | Example | Purpose |
 | --- | --- | --- |
 | `todo DESCRIPTION` | `todo read book` | Adds a todo task. |
-| `deadline DESCRIPTION /by DATE` | `deadline submit assignment /by Friday` | Adds a task with a deadline. |
-| `event DESCRIPTION /from START /to END` | `event project meeting /from 2pm /to 4pm` | Adds an event. |
+| `deadline DESCRIPTION /by DATE` | `deadline submit assignment /by 2026-09-01` | Adds a task with a deadline. |
+| `event DESCRIPTION /from START /to END` | `event meeting /from 2026-09-01 14:00 /to 2026-09-01 16:00` | Adds an event. |
 | `list` | `list` | Shows all tasks. |
+| `find KEYWORD` | `find book` | Finds tasks containing a keyword, ignoring letter case. |
+| `on DATE` | `on 2026-09-01` | Shows deadlines and events occurring on a date. |
 | `mark NUMBER` | `mark 2` | Marks a task as complete. |
 | `unmark NUMBER` | `unmark 2` | Marks a task as incomplete. |
 | `delete NUMBER` | `delete 2` | Removes a task. |
 | `bye` | `bye` | Closes Clarry. |
 
 Task numbers shown by `list` start at 1.
+Dates use `yyyy-MM-dd`, while event date-times use `yyyy-MM-dd HH:mm`.
 
 ## Saved tasks
 
@@ -48,13 +55,34 @@ Clarry automatically saves tasks after every change in `data/clarry.txt` and rel
 
 If the save file is missing, Clarry starts with an empty list. If one saved line is malformed, Clarry skips that line and loads the remaining valid tasks.
 
-## Running from the terminal
+## Running with Gradle
 
-From the project root, compile and run the program with:
+From the project root on Windows, run:
 
 ```powershell
-javac -d out src/main/java/*.java
-java -cp out Clarry
+.\gradlew.bat run
 ```
 
-The generated `out` folder contains compiled files and can be deleted safely.
+On macOS or Linux, run `./gradlew run` instead.
+
+To compile the application and run its JUnit tests:
+
+```powershell
+.\gradlew.bat build
+```
+
+## Creating and running the JAR
+
+Create the executable fat JAR with:
+
+```powershell
+.\gradlew.bat shadowJar
+```
+
+Gradle creates `build/libs/clarry.jar`. Run it with Java 25:
+
+```powershell
+java -jar "build\libs\clarry.jar"
+```
+
+The `build` directory contains generated files and should not be committed to Git.
