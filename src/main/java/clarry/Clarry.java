@@ -20,95 +20,43 @@ public class Clarry {
     private final Ui ui;
     private final Storage storage;
     private final Parser parser;
+    private TaskList tasks;
+    private boolean isExitRequested;
 
     /** Creates Clarry with its console user interface. */
     public Clarry() {
         ui = new Ui();
         storage = new Storage(DATA_FILE);
         parser = new Parser();
+        isExitRequested = false;
     }
 
     /** Starts Clarry's command loop. */
     public void run() {
         ui.showWelcome();
-        TaskList tasks = loadTasks();
+        initialiseTasks();
 
-        commandLoop:
-        while (true) {
+        while (!isExitRequested) {
             String input = ui.readCommand();
-
-            try {
-                CommandType commandType = parser.parseCommandType(input);
-                switch (commandType) {
-                    case BYE:
-                        if (!input.equals("bye")) {
-                            parser.requireExactCommand(input, "bye");
-                        }
-                        ui.showGoodbye();
-                        break commandLoop;
-                    case LIST:
-                        if (!input.equals("list")) {
-                            parser.requireExactCommand(input, "list");
-                        }
-                        ui.showList(tasks.getTasks());
-                        break;
-                    case ON:
-                        LocalDate date = parser.parseDate(input);
-                        ui.showTasksOnDate(date, tasks.getTasksOnDate(date));
-                        break;
-                    case FIND:
-                        String keyword = parser.parseFindKeyword(input);
-                        ui.showFoundTasks(tasks.find(keyword));
-                        break;
-                    case MARK:
-                        int markIndex = parser.parseIndex(input, "mark", tasks.size());
-                        tasks.get(markIndex).markAsDone();
-                        saveTasks(tasks);
-                        ui.showMarked(tasks.get(markIndex));
-                        break;
-                    case UNMARK:
-                        int unmarkIndex = parser.parseIndex(input, "unmark", tasks.size());
-                        tasks.get(unmarkIndex).markAsNotDone();
-                        saveTasks(tasks);
-                        ui.showUnmarked(tasks.get(unmarkIndex));
-                        break;
-                    case DELETE:
-                        int deleteIndex = parser.parseIndex(input, "delete", tasks.size());
-                        Task deletedTask = tasks.delete(deleteIndex);
-                        saveTasks(tasks);
-                        ui.showDeleted(deletedTask, tasks.size());
-                        break;
-                    case TODO:
-                        Task todoTask = parser.parseTodo(input);
-                        tasks.add(todoTask);
-                        saveTasks(tasks);
-                        ui.showAdded(todoTask, tasks.size());
-                        break;
-                    case DEADLINE:
-                        Task deadlineTask = parser.parseDeadline(input);
-                        tasks.add(deadlineTask);
-                        saveTasks(tasks);
-                        ui.showAdded(deadlineTask, tasks.size());
-                        break;
-                    case EVENT:
-                        Task eventTask = parser.parseEvent(input);
-                        tasks.add(eventTask);
-                        saveTasks(tasks);
-                        ui.showAdded(eventTask, tasks.size());
-                        break;
-                    case UNKNOWN:
-                        parser.throwUnknownCommand();
-                        break;
-                    default:
-                        throw new AssertionError("Unhandled command type: " + commandType);
-                }
-            } catch (ClarryException e) {
-                ui.showError(e.getMessage());
-            } catch (NumberFormatException e) {
-                ui.showError("OOPS!!! Please provide a valid task number.");
-            }
+            ui.showResponse(getResponse(input));
         }
+    }
 
+    /**
+     * Executes one command and returns the response for a console or GUI frontend.
+     *
+     * @param input command entered by the user
+     * @return response produced by Clarry
+     */
+    public String getResponse(String input) {
+        initialiseTasks();
+        try {
+            return executeCommand(input);
+        } catch (ClarryException e) {
+            return ui.getErrorMessage(e.getMessage());
+        } catch (NumberFormatException e) {
+            return ui.getErrorMessage("OOPS!!! Please provide a valid task number.");
+        }
     }
 
     /** Starts Clarry from the command line. */
@@ -126,6 +74,74 @@ public class Clarry {
             storage.save(tasks);
         } catch (IOException e) {
             ui.showSaveError();
+        }
+    }
+
+    /** Loads tasks once before either frontend processes its first command. */
+    private void initialiseTasks() {
+        if (tasks == null) {
+            tasks = loadTasks();
+        }
+    }
+
+    /**
+     * Executes a validated command and returns its response text.
+     *
+     * @param input command entered by the user
+     * @return successful command response
+     * @throws ClarryException if the command is invalid
+     */
+    private String executeCommand(String input) throws ClarryException {
+        CommandType commandType = parser.parseCommandType(input);
+        switch (commandType) {
+            case BYE:
+                parser.requireExactCommand(input, "bye");
+                isExitRequested = true;
+                return ui.getGoodbyeMessage();
+            case LIST:
+                parser.requireExactCommand(input, "list");
+                return ui.getListMessage(tasks.getTasks());
+            case ON:
+                LocalDate date = parser.parseDate(input);
+                return ui.getTasksOnDateMessage(date, tasks.getTasksOnDate(date));
+            case FIND:
+                String keyword = parser.parseFindKeyword(input);
+                return ui.getFoundTasksMessage(tasks.find(keyword));
+            case MARK:
+                int markIndex = parser.parseIndex(input, "mark", tasks.size());
+                tasks.get(markIndex).markAsDone();
+                saveTasks(tasks);
+                return ui.getMarkedMessage(tasks.get(markIndex));
+            case UNMARK:
+                int unmarkIndex = parser.parseIndex(input, "unmark", tasks.size());
+                tasks.get(unmarkIndex).markAsNotDone();
+                saveTasks(tasks);
+                return ui.getUnmarkedMessage(tasks.get(unmarkIndex));
+            case DELETE:
+                int deleteIndex = parser.parseIndex(input, "delete", tasks.size());
+                Task deletedTask = tasks.delete(deleteIndex);
+                saveTasks(tasks);
+                return ui.getDeletedMessage(deletedTask, tasks.size());
+            case TODO:
+                Task todoTask = parser.parseTodo(input);
+                tasks.add(todoTask);
+                saveTasks(tasks);
+                return ui.getAddedMessage(todoTask, tasks.size());
+            case DEADLINE:
+                Task deadlineTask = parser.parseDeadline(input);
+                tasks.add(deadlineTask);
+                saveTasks(tasks);
+                return ui.getAddedMessage(deadlineTask, tasks.size());
+            case EVENT:
+                Task eventTask = parser.parseEvent(input);
+                tasks.add(eventTask);
+                saveTasks(tasks);
+                return ui.getAddedMessage(eventTask, tasks.size());
+            case UNKNOWN:
+                parser.throwUnknownCommand();
+                throw new AssertionError("Unknown-command parser did not throw an exception");
+            default:
+                throw new AssertionError("Unhandled command type: " + commandType);
         }
     }
 
