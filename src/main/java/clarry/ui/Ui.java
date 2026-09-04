@@ -28,11 +28,12 @@ public class Ui {
                 + " \\_____|_|\\__,_|_|  |_|  \\__,  |\n"
                 + "                          __/  |\n"
                 + "                         |____/\n";
-        System.out.println(banner);
-        showDivider();
-        System.out.println(" Hello! I'm Clarry.");
-        System.out.println(" What can I do for you?");
-        showDivider();
+        printLines(
+                banner,
+                DIVIDER,
+                " Hello! I'm Clarry.",
+                " What can I do for you?",
+                DIVIDER);
     }
 
     /** Reads one full command line from the user. */
@@ -42,7 +43,7 @@ public class Ui {
 
     /** Displays the standard divider line. */
     public void showDivider() {
-        System.out.println(DIVIDER);
+        printLines(DIVIDER);
     }
 
     /** Displays Clarry's goodbye message. */
@@ -92,9 +93,7 @@ public class Ui {
 
     /** Displays response text between the standard divider lines. */
     public void showResponse(String response) {
-        showDivider();
-        System.out.println(response);
-        showDivider();
+        printLines(DIVIDER, response, DIVIDER);
     }
 
     /** Returns Clarry's goodbye response. */
@@ -168,5 +167,12 @@ public class Ui {
             message.append("\n ").append(i + 1).append(".").append(tasks.get(i));
         }
         return message.toString();
+    }
+
+    /** Prints each supplied line in the order received. */
+    private void printLines(String... lines) {
+        for (String line : lines) {
+            System.out.println(line);
+        }
     }
 }
