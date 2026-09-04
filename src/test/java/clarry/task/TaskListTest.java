@@ -34,8 +34,7 @@ class TaskListTest {
     void getTasks_returnsUnmodifiableSnapshot() throws ClarryException {
         TaskList taskList = new TaskList(List.of(new Todo("buy milk")));
 
-        assertThrows(UnsupportedOperationException.class,
-                () -> taskList.getTasks().add(new Todo("read book")));
+        assertThrows(UnsupportedOperationException.class, () -> taskList.getTasks().add(new Todo("read book")));
         assertEquals(1, taskList.size());
     }
 

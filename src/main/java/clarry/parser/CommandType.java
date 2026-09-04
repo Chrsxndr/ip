@@ -14,28 +14,28 @@ public enum CommandType {
      */
     public static CommandType fromWord(String word) {
         switch (word) {
-        case "bye":
-            return BYE;
-        case "list":
-            return LIST;
-        case "on":
-            return ON;
-        case "find":
-            return FIND;
-        case "mark":
-            return MARK;
-        case "unmark":
-            return UNMARK;
-        case "delete":
-            return DELETE;
-        case "todo":
-            return TODO;
-        case "deadline":
-            return DEADLINE;
-        case "event":
-            return EVENT;
-        default:
-            return UNKNOWN;
+            case "bye":
+                return BYE;
+            case "list":
+                return LIST;
+            case "on":
+                return ON;
+            case "find":
+                return FIND;
+            case "mark":
+                return MARK;
+            case "unmark":
+                return UNMARK;
+            case "delete":
+                return DELETE;
+            case "todo":
+                return TODO;
+            case "deadline":
+                return DEADLINE;
+            case "event":
+                return EVENT;
+            default:
+                return UNKNOWN;
         }
     }
 }

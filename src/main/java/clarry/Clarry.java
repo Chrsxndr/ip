@@ -40,65 +40,67 @@ public class Clarry {
             try {
                 CommandType commandType = parser.parseCommandType(input);
                 switch (commandType) {
-                case BYE:
-                    if (!input.equals("bye")) {
-                        parser.requireExactCommand(input, "bye");
-                    }
-                    ui.showGoodbye();
-                    break commandLoop;
-                case LIST:
-                    if (!input.equals("list")) {
-                        parser.requireExactCommand(input, "list");
-                    }
-                    ui.showList(tasks.getTasks());
-                    break;
-                case ON:
-                    LocalDate date = parser.parseDate(input);
-                    ui.showTasksOnDate(date, tasks.getTasksOnDate(date));
-                    break;
-                case FIND:
-                    String keyword = parser.parseFindKeyword(input);
-                    ui.showFoundTasks(tasks.find(keyword));
-                    break;
-                case MARK:
-                    int markIndex = parser.parseIndex(input, "mark", tasks.size());
-                    tasks.get(markIndex).markAsDone();
-                    saveTasks(tasks);
-                    ui.showMarked(tasks.get(markIndex));
-                    break;
-                case UNMARK:
-                    int unmarkIndex = parser.parseIndex(input, "unmark", tasks.size());
-                    tasks.get(unmarkIndex).markAsNotDone();
-                    saveTasks(tasks);
-                    ui.showUnmarked(tasks.get(unmarkIndex));
-                    break;
-                case DELETE:
-                    int deleteIndex = parser.parseIndex(input, "delete", tasks.size());
-                    Task deletedTask = tasks.delete(deleteIndex);
-                    saveTasks(tasks);
-                    ui.showDeleted(deletedTask, tasks.size());
-                    break;
-                case TODO:
-                    Task todoTask = parser.parseTodo(input);
-                    tasks.add(todoTask);
-                    saveTasks(tasks);
-                    ui.showAdded(todoTask, tasks.size());
-                    break;
-                case DEADLINE:
-                    Task deadlineTask = parser.parseDeadline(input);
-                    tasks.add(deadlineTask);
-                    saveTasks(tasks);
-                    ui.showAdded(deadlineTask, tasks.size());
-                    break;
-                case EVENT:
-                    Task eventTask = parser.parseEvent(input);
-                    tasks.add(eventTask);
-                    saveTasks(tasks);
-                    ui.showAdded(eventTask, tasks.size());
-                    break;
-                case UNKNOWN:
-                    parser.throwUnknownCommand();
-                    break;
+                    case BYE:
+                        if (!input.equals("bye")) {
+                            parser.requireExactCommand(input, "bye");
+                        }
+                        ui.showGoodbye();
+                        break commandLoop;
+                    case LIST:
+                        if (!input.equals("list")) {
+                            parser.requireExactCommand(input, "list");
+                        }
+                        ui.showList(tasks.getTasks());
+                        break;
+                    case ON:
+                        LocalDate date = parser.parseDate(input);
+                        ui.showTasksOnDate(date, tasks.getTasksOnDate(date));
+                        break;
+                    case FIND:
+                        String keyword = parser.parseFindKeyword(input);
+                        ui.showFoundTasks(tasks.find(keyword));
+                        break;
+                    case MARK:
+                        int markIndex = parser.parseIndex(input, "mark", tasks.size());
+                        tasks.get(markIndex).markAsDone();
+                        saveTasks(tasks);
+                        ui.showMarked(tasks.get(markIndex));
+                        break;
+                    case UNMARK:
+                        int unmarkIndex = parser.parseIndex(input, "unmark", tasks.size());
+                        tasks.get(unmarkIndex).markAsNotDone();
+                        saveTasks(tasks);
+                        ui.showUnmarked(tasks.get(unmarkIndex));
+                        break;
+                    case DELETE:
+                        int deleteIndex = parser.parseIndex(input, "delete", tasks.size());
+                        Task deletedTask = tasks.delete(deleteIndex);
+                        saveTasks(tasks);
+                        ui.showDeleted(deletedTask, tasks.size());
+                        break;
+                    case TODO:
+                        Task todoTask = parser.parseTodo(input);
+                        tasks.add(todoTask);
+                        saveTasks(tasks);
+                        ui.showAdded(todoTask, tasks.size());
+                        break;
+                    case DEADLINE:
+                        Task deadlineTask = parser.parseDeadline(input);
+                        tasks.add(deadlineTask);
+                        saveTasks(tasks);
+                        ui.showAdded(deadlineTask, tasks.size());
+                        break;
+                    case EVENT:
+                        Task eventTask = parser.parseEvent(input);
+                        tasks.add(eventTask);
+                        saveTasks(tasks);
+                        ui.showAdded(eventTask, tasks.size());
+                        break;
+                    case UNKNOWN:
+                        parser.throwUnknownCommand();
+                        break;
+                    default:
+                        throw new AssertionError("Unhandled command type: " + commandType);
                 }
             } catch (ClarryException e) {
                 ui.showError(e.getMessage());

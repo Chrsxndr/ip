@@ -94,26 +94,26 @@ public class Storage {
 
         Task task;
         switch (parts[0]) {
-        case "T":
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Invalid todo data");
-            }
-            task = new Todo(parts[2]);
-            break;
-        case "D":
-            if (parts.length != 4 || parts[3].isEmpty()) {
-                throw new IllegalArgumentException("Invalid deadline data");
-            }
-            task = new Deadline(parts[2], parts[3]);
-            break;
-        case "E":
-            if (parts.length != 5 || parts[3].isEmpty() || parts[4].isEmpty()) {
-                throw new IllegalArgumentException("Invalid event data");
-            }
-            task = new Event(parts[2], parts[3], parts[4]);
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown task type");
+            case "T":
+                if (parts.length != 3) {
+                    throw new IllegalArgumentException("Invalid todo data");
+                }
+                task = new Todo(parts[2]);
+                break;
+            case "D":
+                if (parts.length != 4 || parts[3].isEmpty()) {
+                    throw new IllegalArgumentException("Invalid deadline data");
+                }
+                task = new Deadline(parts[2], parts[3]);
+                break;
+            case "E":
+                if (parts.length != 5 || parts[3].isEmpty() || parts[4].isEmpty()) {
+                    throw new IllegalArgumentException("Invalid event data");
+                }
+                task = new Event(parts[2], parts[3], parts[4]);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown task type");
         }
 
         if (parts[1].equals("1")) {

@@ -32,8 +32,7 @@ class ParserTest {
 
     @Test
     void parseDeadline_invalidDate_throwsClarryException() {
-        assertThrows(ClarryException.class,
-                () -> parser.parseDeadline("deadline submit report /by not-a-date"));
+        assertThrows(ClarryException.class, () -> parser.parseDeadline("deadline submit report /by not-a-date"));
     }
 
     @Test
