@@ -1,0 +1,75 @@
+.root {
+    -fx-background-color: #f4f6fb;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+}
+
+.header {
+    -fx-background-color: #384765;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.chat-scroll-pane,
+.chat-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.dialog-container {
+    -fx-background-color: #f4f6fb;
+}
+
+.message-bubble {
+    -fx-background-radius: 14px;
+    -fx-padding: 11px 14px;
+}
+
+.user-bubble {
+    -fx-background-color: #dce8ff;
+    -fx-text-fill: #17213a;
+}
+
+.clarry-bubble {
+    -fx-background-color: white;
+    -fx-text-fill: #202633;
+}
+
+.avatar {
+    -fx-background-radius: 21px;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.user-avatar {
+    -fx-background-color: #5d78b6;
+}
+
+.clarry-avatar {
+    -fx-background-color: #e2885d;
+    -fx-font-size: 17px;
+}
+
+.input-bar {
+    -fx-background-color: white;
+    -fx-border-color: #d9deea transparent transparent transparent;
+}
+
+.text-field {
+    -fx-background-color: #eef1f7;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 12px;
+}
+
+.button {
+    -fx-background-color: #384765;
+    -fx-background-radius: 8px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 18px;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: #4c5e80;
+}
