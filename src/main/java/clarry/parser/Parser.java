@@ -19,9 +19,7 @@ public class Parser {
      * @return recognized command type, or {@code UNKNOWN}
      */
     public CommandType parseCommandType(String input) {
-        int firstSpace = input.indexOf(' ');
-        String commandWord = firstSpace == -1 ? input : input.substring(0, firstSpace);
-        return CommandType.fromWord(commandWord);
+        return CommandType.fromWord(getCommandWord(input));
     }
 
     /**
@@ -45,6 +43,8 @@ public class Parser {
      * @throws ClarryException if the description is empty
      */
     public Todo parseTodo(String input) throws ClarryException {
+        assert CommandType.fromWord(getCommandWord(input)) == CommandType.TODO
+                : "Todo parsing requires a todo command";
         String description = parseArguments(input, "todo");
         if (description.isEmpty()) {
             throw new ClarryException("OOPS!!! The description of a todo cannot be empty.");
@@ -60,6 +60,8 @@ public class Parser {
      * @throws ClarryException if the command is incomplete or the date is invalid
      */
     public Deadline parseDeadline(String input) throws ClarryException {
+        assert CommandType.fromWord(getCommandWord(input)) == CommandType.DEADLINE
+                : "Deadline parsing requires a deadline command";
         String details = parseArguments(input, "deadline");
         if (details.isEmpty()) {
             throw new ClarryException("OOPS!!! The description of a deadline cannot be empty.");
@@ -83,6 +85,8 @@ public class Parser {
      * @throws ClarryException if the command is incomplete or either date and time is invalid
      */
     public Event parseEvent(String input) throws ClarryException {
+        assert CommandType.fromWord(getCommandWord(input)) == CommandType.EVENT
+                : "Event parsing requires an event command";
         String details = parseArguments(input, "event");
         String[] fromSplit = details.split(" /from ", 2);
         String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to ", 2) : new String[0];
@@ -103,6 +107,8 @@ public class Parser {
      * @throws ClarryException if no valid existing task number is supplied
      */
     public int parseIndex(String input, String command, int taskCount) throws ClarryException {
+        assert getCommandWord(input).equals(command) : "Index parsing requires the dispatched command";
+        assert taskCount >= 0 : "Task count cannot be negative";
         String numberPart = parseArguments(input, command);
         if (numberPart.isEmpty()) {
             throw new ClarryException("OOPS!!! Please specify which task number to " + command + ".");
@@ -122,6 +128,8 @@ public class Parser {
      * @throws ClarryException if the command does not contain one valid ISO date
      */
     public LocalDate parseDate(String input) throws ClarryException {
+        assert CommandType.fromWord(getCommandWord(input)) == CommandType.ON
+                : "Date parsing requires an on command";
         String dateText = parseArguments(input, "on");
         try {
             return LocalDate.parse(dateText);
@@ -138,6 +146,8 @@ public class Parser {
      * @throws ClarryException if the command does not contain a keyword
      */
     public String parseFindKeyword(String input) throws ClarryException {
+        assert CommandType.fromWord(getCommandWord(input)) == CommandType.FIND
+                : "Keyword parsing requires a find command";
         String keyword = parseArguments(input, "find");
         if (keyword.isEmpty()) {
             throw new ClarryException("OOPS!!! Please specify a keyword to find.");
@@ -153,5 +163,11 @@ public class Parser {
     /** Returns the trimmed text following a command word. */
     private String parseArguments(String input, String command) {
         return input.length() > command.length() ? input.substring(command.length()).trim() : "";
+    }
+
+    /** Returns the first whitespace-delimited word in a command. */
+    private String getCommandWord(String input) {
+        int firstSpace = input.indexOf(' ');
+        return firstSpace == -1 ? input : input.substring(0, firstSpace);
     }
 }

@@ -26,6 +26,8 @@ public class Main extends Application {
         try {
             URL mainWindow = Main.class.getResource("/view/MainWindow.fxml");
             URL stylesheet = Main.class.getResource("/styles/main.css");
+            assert mainWindow != null : "MainWindow.fxml must be packaged with the application";
+            assert stylesheet != null : "main.css must be packaged with the application";
             FXMLLoader loader = new FXMLLoader(mainWindow);
             AnchorPane root = loader.load();
             loader.<MainWindow>getController().setClarry(clarry);

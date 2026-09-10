@@ -15,6 +15,7 @@ public abstract class Task {
      * @param description description of the task
      */
     protected Task(String description) {
+        assert description != null && !description.isBlank() : "A task must have a non-blank description";
         this.description = description;
         this.isDone = false;
     }

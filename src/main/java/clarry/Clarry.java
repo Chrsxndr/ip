@@ -92,6 +92,7 @@ public class Clarry {
      * @throws ClarryException if the command is invalid
      */
     private String executeCommand(String input) throws ClarryException {
+        assert tasks != null : "Tasks must be initialized before executing a command";
         CommandType commandType = parser.parseCommandType(input);
         switch (commandType) {
             case BYE:
@@ -130,6 +131,8 @@ public class Clarry {
     /** Marks the task identified by the command as done. */
     private String markTask(String input) throws ClarryException {
         int taskIndex = parser.parseIndex(input, "mark", tasks.size());
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Parser must return an index within the task list";
         Task task = tasks.get(taskIndex);
         task.markAsDone();
         saveTasks(tasks);
@@ -139,6 +142,8 @@ public class Clarry {
     /** Marks the task identified by the command as not done. */
     private String unmarkTask(String input) throws ClarryException {
         int taskIndex = parser.parseIndex(input, "unmark", tasks.size());
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Parser must return an index within the task list";
         Task task = tasks.get(taskIndex);
         task.markAsNotDone();
         saveTasks(tasks);
@@ -148,6 +153,8 @@ public class Clarry {
     /** Deletes the task identified by the command. */
     private String deleteTask(String input) throws ClarryException {
         int taskIndex = parser.parseIndex(input, "delete", tasks.size());
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Parser must return an index within the task list";
         Task deletedTask = tasks.delete(taskIndex);
         saveTasks(tasks);
         return ui.getDeletedMessage(deletedTask, tasks.size());
