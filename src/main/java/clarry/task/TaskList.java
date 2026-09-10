@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Manages the tasks currently known to Clarry.
@@ -83,13 +84,9 @@ public class TaskList implements Iterable<Task> {
      */
     public List<Task> getTasksOnDate(LocalDate date) {
         assert date != null : "Task filtering requires a date";
-        List<Task> tasksOnDate = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.occursOn(date)) {
-                tasksOnDate.add(task);
-            }
-        }
-        return tasksOnDate;
+        return tasks.stream()
+                .filter(task -> task.occursOn(date))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -101,14 +98,9 @@ public class TaskList implements Iterable<Task> {
     public List<Task> find(String keyword) {
         assert keyword != null && !keyword.isBlank() : "Task search requires a non-blank keyword";
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
-        List<Task> matchingTasks = new ArrayList<>();
-        for (Task task : tasks) {
-            String normalizedDescription = task.getDescription().toLowerCase(Locale.ROOT);
-            if (normalizedDescription.contains(normalizedKeyword)) {
-                matchingTasks.add(task);
-            }
-        }
-        return matchingTasks;
+        return tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
