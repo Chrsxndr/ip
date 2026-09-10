@@ -85,8 +85,7 @@ public class TaskList implements Iterable<Task> {
         assert date != null : "Task filtering requires a date";
         List<Task> tasksOnDate = new ArrayList<>();
         for (Task task : tasks) {
-            if ((task instanceof Deadline && ((Deadline) task).occursOn(date))
-                    || (task instanceof Event && ((Event) task).occursOn(date))) {
+            if (task.occursOn(date)) {
                 tasksOnDate.add(task);
             }
         }
