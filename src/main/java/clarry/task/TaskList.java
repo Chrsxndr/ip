@@ -81,8 +81,7 @@ public class TaskList implements Iterable<Task> {
     public List<Task> getTasksOnDate(LocalDate date) {
         List<Task> tasksOnDate = new ArrayList<>();
         for (Task task : tasks) {
-            if ((task instanceof Deadline && ((Deadline) task).occursOn(date))
-                    || (task instanceof Event && ((Event) task).occursOn(date))) {
+            if (task.occursOn(date)) {
                 tasksOnDate.add(task);
             }
         }

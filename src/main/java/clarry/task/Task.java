@@ -1,5 +1,7 @@
 package clarry.task;
 
+import java.time.LocalDate;
+
 /**
  * Represents the shared information and behaviour of a task.
  */
@@ -52,6 +54,17 @@ public abstract class Task {
      */
     public boolean isDone() {
         return isDone;
+    }
+
+    /**
+     * Returns whether this task occurs on the specified date.
+     * Undated tasks do not occur on any date.
+     *
+     * @param date date to check
+     * @return whether this task occurs on the date
+     */
+    public boolean occursOn(LocalDate date) {
+        return false;
     }
 
     /**

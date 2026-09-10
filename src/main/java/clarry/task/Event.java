@@ -70,6 +70,7 @@ public class Event extends Task {
      * @param date date to check
      * @return whether any part of this event occurs on the date
      */
+    @Override
     public boolean occursOn(LocalDate date) {
         return !date.isBefore(from.toLocalDate()) && !date.isAfter(to.toLocalDate());
     }
