@@ -45,7 +45,7 @@ public class Parser {
      * @throws ClarryException if the description is empty
      */
     public Todo parseTodo(String input) throws ClarryException {
-        String description = input.length() > 4 ? input.substring(5).trim() : "";
+        String description = parseArguments(input, "todo");
         if (description.isEmpty()) {
             throw new ClarryException("OOPS!!! The description of a todo cannot be empty.");
         }
@@ -60,7 +60,7 @@ public class Parser {
      * @throws ClarryException if the command is incomplete or the date is invalid
      */
     public Deadline parseDeadline(String input) throws ClarryException {
-        String details = input.length() > 8 ? input.substring(9).trim() : "";
+        String details = parseArguments(input, "deadline");
         if (details.isEmpty()) {
             throw new ClarryException("OOPS!!! The description of a deadline cannot be empty.");
         }
@@ -83,7 +83,7 @@ public class Parser {
      * @throws ClarryException if the command is incomplete or either date and time is invalid
      */
     public Event parseEvent(String input) throws ClarryException {
-        String details = input.length() > 5 ? input.substring(6).trim() : "";
+        String details = parseArguments(input, "event");
         String[] fromSplit = details.split(" /from ", 2);
         String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to ", 2) : new String[0];
         if (fromSplit.length != 2 || toSplit.length != 2 || fromSplit[0].trim().isEmpty()
@@ -103,7 +103,7 @@ public class Parser {
      * @throws ClarryException if no valid existing task number is supplied
      */
     public int parseIndex(String input, String command, int taskCount) throws ClarryException {
-        String numberPart = input.length() > command.length() ? input.substring(command.length()).trim() : "";
+        String numberPart = parseArguments(input, command);
         if (numberPart.isEmpty()) {
             throw new ClarryException("OOPS!!! Please specify which task number to " + command + ".");
         }
@@ -122,7 +122,7 @@ public class Parser {
      * @throws ClarryException if the command does not contain one valid ISO date
      */
     public LocalDate parseDate(String input) throws ClarryException {
-        String dateText = input.length() > 2 ? input.substring(2).trim() : "";
+        String dateText = parseArguments(input, "on");
         try {
             return LocalDate.parse(dateText);
         } catch (DateTimeParseException e) {
@@ -138,7 +138,7 @@ public class Parser {
      * @throws ClarryException if the command does not contain a keyword
      */
     public String parseFindKeyword(String input) throws ClarryException {
-        String keyword = input.length() > 4 ? input.substring(5).trim() : "";
+        String keyword = parseArguments(input, "find");
         if (keyword.isEmpty()) {
             throw new ClarryException("OOPS!!! Please specify a keyword to find.");
         }
@@ -148,5 +148,10 @@ public class Parser {
     /** Throws Clarry's standard error for an unsupported command. */
     public void throwUnknownCommand() throws ClarryException {
         throw new ClarryException("OOPS!!! I'm sorry, but I don't know what that means :-(");
+    }
+
+    /** Returns the trimmed text following a command word. */
+    private String parseArguments(String input, String command) {
+        return input.length() > command.length() ? input.substring(command.length()).trim() : "";
     }
 }
