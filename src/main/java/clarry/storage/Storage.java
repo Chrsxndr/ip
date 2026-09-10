@@ -69,7 +69,7 @@ public class Storage {
             while ((line = reader.readLine()) != null) {
                 try {
                     tasks.add(parseSavedTask(line));
-                } catch (Exception e) {
+                } catch (ClarryException | IllegalArgumentException e) {
                     corruptedLineCount++;
                 }
             }
