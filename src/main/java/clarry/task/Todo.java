@@ -23,13 +23,4 @@ public class Todo extends Task {
         return "[T][" + getStatusIcon() + "] " + getDescription();
     }
 
-    /**
-     * Returns this todo in Clarry's persistent storage format.
-     *
-     * @return pipe-separated todo data
-     */
-    @Override
-    public String toFileFormat() {
-        return "T | " + (isDone() ? "1" : "0") + " | " + getDescription();
-    }
 }
