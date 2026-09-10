@@ -41,51 +41,6 @@ public class Ui {
         return scanner.nextLine();
     }
 
-    /** Displays the standard divider line. */
-    public void showDivider() {
-        printLines(DIVIDER);
-    }
-
-    /** Displays Clarry's goodbye message. */
-    public void showGoodbye() {
-        showResponse(getGoodbyeMessage());
-    }
-
-    /** Displays all tasks in the task list. */
-    public void showList(List<Task> tasks) {
-        showResponse(getListMessage(tasks));
-    }
-
-    /** Displays the tasks that occur on a specified date. */
-    public void showTasksOnDate(LocalDate date, List<Task> tasks) {
-        showResponse(getTasksOnDateMessage(date, tasks));
-    }
-
-    /** Displays tasks whose descriptions match a search keyword. */
-    public void showFoundTasks(List<Task> tasks) {
-        showResponse(getFoundTasksMessage(tasks));
-    }
-
-    /** Displays a task addition confirmation. */
-    public void showAdded(Task task, int taskCount) {
-        showResponse(getAddedMessage(task, taskCount));
-    }
-
-    /** Displays a task deletion confirmation. */
-    public void showDeleted(Task task, int taskCount) {
-        showResponse(getDeletedMessage(task, taskCount));
-    }
-
-    /** Displays a task completion confirmation. */
-    public void showMarked(Task task) {
-        showResponse(getMarkedMessage(task));
-    }
-
-    /** Displays a task incomplete confirmation. */
-    public void showUnmarked(Task task) {
-        showResponse(getUnmarkedMessage(task));
-    }
-
     /** Displays an error message. */
     public void showError(String message) {
         showResponse(getErrorMessage(message));

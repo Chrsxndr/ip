@@ -27,6 +27,7 @@ public class Storage {
      * @param dataFile path of the save file
      */
     public Storage(Path dataFile) {
+        assert dataFile != null : "Storage requires a data-file path";
         this.dataFile = dataFile;
     }
 
@@ -37,6 +38,7 @@ public class Storage {
      * @throws IOException if the save file or its parent directory cannot be written
      */
     public void save(Iterable<Task> tasks) throws IOException {
+        assert tasks != null : "Storage requires tasks to save";
         File file = dataFile.toFile();
         File parentDirectory = file.getParentFile();
         if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
@@ -69,7 +71,7 @@ public class Storage {
             while ((line = reader.readLine()) != null) {
                 try {
                     tasks.add(parseSavedTask(line));
-                } catch (Exception e) {
+                } catch (ClarryException | IllegalArgumentException e) {
                     corruptedLineCount++;
                 }
             }
@@ -88,7 +90,7 @@ public class Storage {
     private Task parseSavedTask(String line) throws ClarryException {
         String[] parts = line.split(" \\| ", -1);
         if (parts.length < 3 || !(parts[1].equals("0") || parts[1].equals("1"))
-                || parts[2].isEmpty()) {
+                || parts[2].isBlank()) {
             throw new IllegalArgumentException("Invalid task data");
         }
 
@@ -134,6 +136,8 @@ public class Storage {
          * @param corruptedLineCount number of malformed lines skipped
          */
         public LoadResult(List<Task> tasks, int corruptedLineCount) {
+            assert tasks != null : "A load result requires a task collection";
+            assert corruptedLineCount >= 0 : "Corrupted-line count cannot be negative";
             this.tasks = tasks;
             this.corruptedLineCount = corruptedLineCount;
         }
