@@ -22,6 +22,8 @@ public class TaskList implements Iterable<Task> {
      * @param tasks tasks to add to the new list
      */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "Initial task collection cannot be null";
+        assert !tasks.contains(null) : "Initial task collection cannot contain null tasks";
         this.tasks = new ArrayList<>(tasks);
     }
 
@@ -31,6 +33,7 @@ public class TaskList implements Iterable<Task> {
      * @param task task to add
      */
     public void add(Task task) {
+        assert task != null : "A task list cannot contain a null task";
         tasks.add(task);
     }
 
@@ -79,6 +82,7 @@ public class TaskList implements Iterable<Task> {
      * @return tasks occurring on the date, in list order
      */
     public List<Task> getTasksOnDate(LocalDate date) {
+        assert date != null : "Task filtering requires a date";
         List<Task> tasksOnDate = new ArrayList<>();
         for (Task task : tasks) {
             if ((task instanceof Deadline && ((Deadline) task).occursOn(date))
@@ -96,6 +100,7 @@ public class TaskList implements Iterable<Task> {
      * @return matching tasks in their original list order
      */
     public List<Task> find(String keyword) {
+        assert keyword != null && !keyword.isBlank() : "Task search requires a non-blank keyword";
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
         List<Task> matchingTasks = new ArrayList<>();
         for (Task task : tasks) {
