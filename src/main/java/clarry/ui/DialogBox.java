@@ -30,8 +30,6 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             throw new AssertionError("Unable to load a dialog box", e);
         }
-        assert dialog != null : "FXML must inject the dialog label";
-        assert avatar != null : "FXML must inject the avatar label";
         dialog.setText(text);
         avatar.setText(avatarText);
     }

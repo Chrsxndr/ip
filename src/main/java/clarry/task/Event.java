@@ -40,7 +40,6 @@ public class Event extends Task {
         if (this.to.isBefore(this.from)) {
             throw new ClarryException("OOPS!!! An event cannot end before it starts.");
         }
-        assert !this.to.isBefore(this.from) : "A valid event must not end before it starts";
     }
 
     /**

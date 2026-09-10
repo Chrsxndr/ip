@@ -26,8 +26,6 @@ public class MainWindow extends AnchorPane {
     /** Keeps the newest chat message visible as the conversation grows. */
     @FXML
     public void initialize() {
-        assert scrollPane != null : "FXML must inject the scroll pane";
-        assert dialogContainer != null : "FXML must inject the dialog container";
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
@@ -37,7 +35,6 @@ public class MainWindow extends AnchorPane {
      * @param clarry chatbot backend
      */
     public void setClarry(Clarry clarry) {
-        assert clarry != null : "Main window requires a Clarry backend";
         this.clarry = clarry;
         dialogContainer.getChildren().add(
                 DialogBox.getClarryDialog("Hello! I'm Clarry.\nWhat can I do for you?"));
@@ -46,8 +43,6 @@ public class MainWindow extends AnchorPane {
     /** Sends non-blank input to Clarry and displays both sides of the exchange. */
     @FXML
     private void handleUserInput() {
-        assert clarry != null : "Clarry backend must be set before input is handled";
-        assert userInput != null && sendButton != null : "FXML must inject the input controls";
         String input = userInput.getText();
         if (input.isBlank()) {
             return;

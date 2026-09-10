@@ -19,7 +19,9 @@ public class Parser {
      * @return recognized command type, or {@code UNKNOWN}
      */
     public CommandType parseCommandType(String input) {
-        return CommandType.fromWord(getCommandWord(input));
+        int firstSpace = input.indexOf(' ');
+        String commandWord = firstSpace == -1 ? input : input.substring(0, firstSpace);
+        return CommandType.fromWord(commandWord);
     }
 
     /**
@@ -43,8 +45,6 @@ public class Parser {
      * @throws ClarryException if the description is empty
      */
     public Todo parseTodo(String input) throws ClarryException {
-        assert CommandType.fromWord(getCommandWord(input)) == CommandType.TODO
-                : "Todo parsing requires a todo command";
         String description = input.length() > 4 ? input.substring(5).trim() : "";
         if (description.isEmpty()) {
             throw new ClarryException("OOPS!!! The description of a todo cannot be empty.");
@@ -60,8 +60,6 @@ public class Parser {
      * @throws ClarryException if the command is incomplete or the date is invalid
      */
     public Deadline parseDeadline(String input) throws ClarryException {
-        assert CommandType.fromWord(getCommandWord(input)) == CommandType.DEADLINE
-                : "Deadline parsing requires a deadline command";
         String details = input.length() > 8 ? input.substring(9).trim() : "";
         if (details.isEmpty()) {
             throw new ClarryException("OOPS!!! The description of a deadline cannot be empty.");
@@ -85,8 +83,6 @@ public class Parser {
      * @throws ClarryException if the command is incomplete or either date and time is invalid
      */
     public Event parseEvent(String input) throws ClarryException {
-        assert CommandType.fromWord(getCommandWord(input)) == CommandType.EVENT
-                : "Event parsing requires an event command";
         String details = input.length() > 5 ? input.substring(6).trim() : "";
         String[] fromSplit = details.split(" /from ", 2);
         String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to ", 2) : new String[0];
@@ -107,8 +103,6 @@ public class Parser {
      * @throws ClarryException if no valid existing task number is supplied
      */
     public int parseIndex(String input, String command, int taskCount) throws ClarryException {
-        assert getCommandWord(input).equals(command) : "Index parsing requires the dispatched command";
-        assert taskCount >= 0 : "Task count cannot be negative";
         String numberPart = input.length() > command.length() ? input.substring(command.length()).trim() : "";
         if (numberPart.isEmpty()) {
             throw new ClarryException("OOPS!!! Please specify which task number to " + command + ".");
@@ -128,8 +122,6 @@ public class Parser {
      * @throws ClarryException if the command does not contain one valid ISO date
      */
     public LocalDate parseDate(String input) throws ClarryException {
-        assert CommandType.fromWord(getCommandWord(input)) == CommandType.ON
-                : "Date parsing requires an on command";
         String dateText = input.length() > 2 ? input.substring(2).trim() : "";
         try {
             return LocalDate.parse(dateText);
@@ -146,8 +138,6 @@ public class Parser {
      * @throws ClarryException if the command does not contain a keyword
      */
     public String parseFindKeyword(String input) throws ClarryException {
-        assert CommandType.fromWord(getCommandWord(input)) == CommandType.FIND
-                : "Keyword parsing requires a find command";
         String keyword = input.length() > 4 ? input.substring(5).trim() : "";
         if (keyword.isEmpty()) {
             throw new ClarryException("OOPS!!! Please specify a keyword to find.");
@@ -158,11 +148,5 @@ public class Parser {
     /** Throws Clarry's standard error for an unsupported command. */
     public void throwUnknownCommand() throws ClarryException {
         throw new ClarryException("OOPS!!! I'm sorry, but I don't know what that means :-(");
-    }
-
-    /** Returns the first whitespace-delimited word in a command. */
-    private String getCommandWord(String input) {
-        int firstSpace = input.indexOf(' ');
-        return firstSpace == -1 ? input : input.substring(0, firstSpace);
     }
 }
