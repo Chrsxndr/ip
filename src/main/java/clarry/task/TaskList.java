@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Manages the tasks currently known to Clarry.
@@ -79,14 +80,10 @@ public class TaskList implements Iterable<Task> {
      * @return tasks occurring on the date, in list order
      */
     public List<Task> getTasksOnDate(LocalDate date) {
-        List<Task> tasksOnDate = new ArrayList<>();
-        for (Task task : tasks) {
-            if ((task instanceof Deadline && ((Deadline) task).occursOn(date))
-                    || (task instanceof Event && ((Event) task).occursOn(date))) {
-                tasksOnDate.add(task);
-            }
-        }
-        return tasksOnDate;
+        return tasks.stream()
+                .filter(task -> (task instanceof Deadline deadline && deadline.occursOn(date))
+                        || (task instanceof Event event && event.occursOn(date)))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -97,14 +94,9 @@ public class TaskList implements Iterable<Task> {
      */
     public List<Task> find(String keyword) {
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
-        List<Task> matchingTasks = new ArrayList<>();
-        for (Task task : tasks) {
-            String normalizedDescription = task.getDescription().toLowerCase(Locale.ROOT);
-            if (normalizedDescription.contains(normalizedKeyword)) {
-                matchingTasks.add(task);
-            }
-        }
-        return matchingTasks;
+        return tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
