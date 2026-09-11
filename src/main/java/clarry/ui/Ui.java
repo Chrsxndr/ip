@@ -56,6 +56,22 @@ public class Ui {
         return " Bye. Hope to see you again soon!";
     }
 
+    /** Returns guidance for every command supported by Clarry. */
+    public String getHelpMessage() {
+        return " Here are the commands I understand:\n"
+                + " help - show this help message\n"
+                + " list - show all tasks\n"
+                + " todo DESCRIPTION - add a todo\n"
+                + " deadline DESCRIPTION /by YYYY-MM-DD - add a deadline\n"
+                + " event DESCRIPTION /from YYYY-MM-DD HH:mm /to YYYY-MM-DD HH:mm - add an event\n"
+                + " on YYYY-MM-DD - show tasks occurring on a date\n"
+                + " find KEYWORD - find tasks by description\n"
+                + " mark NUMBER - mark a task as done\n"
+                + " unmark NUMBER - mark a task as not done\n"
+                + " delete NUMBER - delete a task\n"
+                + " bye - exit Clarry";
+    }
+
     /** Returns a formatted list of all tasks. */
     public String getListMessage(List<Task> tasks) {
         return getTaskListMessage(" Here are the tasks in your list:", tasks);
