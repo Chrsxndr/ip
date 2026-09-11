@@ -24,7 +24,8 @@ public class TaskList implements Iterable<Task> {
      */
     public TaskList(List<Task> tasks) {
         assert tasks != null : "Initial task collection cannot be null";
-        assert !tasks.contains(null) : "Initial task collection cannot contain null tasks";
+        assert tasks.stream().allMatch(task -> task != null)
+                : "Initial task collection cannot contain null tasks";
         this.tasks = new ArrayList<>(tasks);
     }
 
