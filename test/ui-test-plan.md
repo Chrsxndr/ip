@@ -2,6 +2,60 @@
 
 Run each case as a new Clarry session. Before each case, remove `data/clarry.txt` so saved tasks from a previous session do not affect the result. Expected output includes the startup banner and all responses in the session.
 
+## Help command
+
+Aim: Verify that help lists every supported command, does not add tasks, and rejects extra arguments.
+
+### Inputs
+
+```text
+help
+list
+help extra
+bye
+```
+
+### Expected output
+
+```text
+  _____ _
+ / ____| |
+| |    | | __ _ _ __ _ __ _   _
+| |    | |/ _` | '__| '__| | | |
+| |____| | (_| | |  | |  | |_| |
+ \_____|_|\__,_|_|  |_|  \__,  |
+                          __/  |
+                         |____/
+
+____________________________________________________________
+ Hello! I'm Clarry.
+ What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Here are the commands I understand:
+ help - show this help message
+ list - show all tasks
+ todo DESCRIPTION - add a todo
+ deadline DESCRIPTION /by YYYY-MM-DD - add a deadline
+ event DESCRIPTION /from YYYY-MM-DD HH:mm /to YYYY-MM-DD HH:mm - add an event
+ on YYYY-MM-DD - show tasks occurring on a date
+ find KEYWORD - find tasks by description
+ mark NUMBER - mark a task as done
+ unmark NUMBER - mark a task as not done
+ delete NUMBER - delete a task
+ bye - exit Clarry
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+____________________________________________________________
+ OOPS!!! I'm sorry, but I don't know what that means :-(
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
 ## Task types, completion status, and listing
 
 Aim: Verify task-type display, completion updates, deletion, and renumbering of the remaining tasks.

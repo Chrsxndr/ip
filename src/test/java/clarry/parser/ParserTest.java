@@ -15,6 +15,7 @@ class ParserTest {
 
     @Test
     void parseCommandType_knownAndUnknownCommands_returnsExpectedTypes() {
+        assertEquals(CommandType.HELP, parser.parseCommandType("help"));
         assertEquals(CommandType.TODO, parser.parseCommandType("todo read book"));
         assertEquals(CommandType.FIND, parser.parseCommandType("find book"));
         assertEquals(CommandType.UNKNOWN, parser.parseCommandType("dance"));

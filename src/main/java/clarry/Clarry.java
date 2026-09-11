@@ -95,6 +95,9 @@ public class Clarry {
         assert tasks != null : "Tasks must be initialized before executing a command";
         CommandType commandType = parser.parseCommandType(input);
         switch (commandType) {
+            case HELP:
+                parser.requireExactCommand(input, "help");
+                return ui.getHelpMessage();
             case BYE:
                 parser.requireExactCommand(input, "bye");
                 isExitRequested = true;

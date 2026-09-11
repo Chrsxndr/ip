@@ -4,7 +4,7 @@ package clarry.parser;
  * Represents the commands understood by Clarry.
  */
 public enum CommandType {
-    BYE, LIST, ON, FIND, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, UNKNOWN;
+    HELP, BYE, LIST, ON, FIND, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, UNKNOWN;
 
     /**
      * Converts the first word of a user command to its command type.
@@ -14,6 +14,8 @@ public enum CommandType {
      */
     public static CommandType fromWord(String word) {
         switch (word) {
+            case "help":
+                return HELP;
             case "bye":
                 return BYE;
             case "list":
