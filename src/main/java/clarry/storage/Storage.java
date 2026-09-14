@@ -1,11 +1,13 @@
 package clarry.storage;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +41,24 @@ public class Storage {
      */
     public void save(Iterable<Task> tasks) throws IOException {
         assert tasks != null : "Storage requires tasks to save";
-        File file = dataFile.toFile();
-        File parentDirectory = file.getParentFile();
-        if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
-            throw new IOException("Could not create the data directory");
-        }
-
-        try (FileWriter writer = new FileWriter(file)) {
-            for (Task task : tasks) {
-                writer.write(task.toFileFormat() + System.lineSeparator());
+        Path target = dataFile.toAbsolutePath();
+        Files.createDirectories(target.getParent());
+        Path temporary = Files.createTempFile(target.getParent(), "clarry-", ".tmp");
+        try {
+            try (BufferedWriter writer = Files.newBufferedWriter(temporary)) {
+                for (Task task : tasks) {
+                    writer.write(task.toFileFormat());
+                    writer.newLine();
+                }
             }
+            // Replace the old file only after every task has been written successfully.
+            try {
+                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            Files.deleteIfExists(temporary);
         }
     }
 
@@ -60,21 +70,22 @@ public class Storage {
      */
     public LoadResult load() throws IOException {
         List<Task> tasks = new ArrayList<>();
-        File file = dataFile.toFile();
-        if (!file.exists()) {
-            return new LoadResult(tasks, 0);
-        }
-
         int corruptedLineCount = 0;
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = Files.newBufferedReader(dataFile)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 try {
-                    tasks.add(parseSavedTask(line));
+                    Task task = parseSavedTask(line);
+                    if (tasks.stream().anyMatch(task::hasSameDetails)) {
+                        throw new IllegalArgumentException("Duplicate saved task");
+                    }
+                    tasks.add(task);
                 } catch (ClarryException | IllegalArgumentException e) {
                     corruptedLineCount++;
                 }
             }
+        } catch (NoSuchFileException e) {
+            return new LoadResult(tasks, 0);
         }
         return new LoadResult(tasks, corruptedLineCount);
     }
@@ -90,7 +101,8 @@ public class Storage {
     private Task parseSavedTask(String line) throws ClarryException {
         String[] parts = line.split(" \\| ", -1);
         if (parts.length < 3 || !(parts[1].equals("0") || parts[1].equals("1"))
-                || parts[2].isBlank()) {
+                || parts[2].isBlank() || parts[2].contains("|")
+                || parts[2].chars().anyMatch(Character::isISOControl)) {
             throw new IllegalArgumentException("Invalid task data");
         }
 

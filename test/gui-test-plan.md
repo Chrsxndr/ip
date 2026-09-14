@@ -15,3 +15,6 @@ Use disposable task data when adding sample tasks.
 | Long commands | Send a todo with a long description. | The user command wraps within its bubble and the response stays within the conversation width. |
 | Keyboard | Submit a command with Enter, then with Send. | Both submit once; focus returns to the cleared input. Blank commands add no messages. |
 | Exit | Send `bye`. | The farewell appears and both input controls become disabled. |
+| Whitespace | Send `  list  ` and then `  bye  `. | List works normally; the padded goodbye still disables both input controls. |
+| Save failure | Using disposable data, replace the loaded save file with a nonempty directory of the same name, then add or mark a task. | An ERROR card reports that saving failed; `list` shows no applied change. |
+| Damaged file | Launch with disposable save data containing a valid task and a malformed line, then send `list`. | An ERROR card explains the partial load; valid tasks are visible, mutations are blocked, and the original file remains unchanged. |

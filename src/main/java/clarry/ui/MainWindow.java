@@ -61,7 +61,7 @@ public class MainWindow extends AnchorPane {
         userInput.clear();
         userInput.requestFocus();
 
-        if (input.equals("bye")) {
+        if (clarry.isExitRequested()) {
             userInput.setDisable(true);
             sendButton.setDisable(true);
         }
