@@ -49,13 +49,23 @@ public class Clarry {
      * @return response produced by Clarry
      */
     public String getResponse(String input) {
+        return getCommandResponse(input).text();
+    }
+
+    /**
+     * Executes a command and includes its status for GUI presentation.
+     *
+     * @param input command entered by the user
+     * @return reply text and whether the command failed
+     */
+    public Response getCommandResponse(String input) {
         initialiseTasks();
         try {
-            return executeCommand(input);
+            return new Response(executeCommand(input), false);
         } catch (ClarryException e) {
-            return ui.getErrorMessage(e.getMessage());
+            return new Response(ui.getErrorMessage(e.getMessage()), true);
         } catch (NumberFormatException e) {
-            return ui.getErrorMessage("OOPS!!! Please provide a valid task number.");
+            return new Response(ui.getErrorMessage("OOPS!!! Please provide a valid task number."), true);
         }
     }
 

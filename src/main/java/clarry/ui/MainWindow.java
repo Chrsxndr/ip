@@ -1,6 +1,7 @@
 package clarry.ui;
 
 import clarry.Clarry;
+import clarry.Response;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -53,11 +54,12 @@ public class MainWindow extends AnchorPane {
             return;
         }
 
-        String response = clarry.getResponse(input);
+        Response response = clarry.getCommandResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input),
-                DialogBox.getClarryDialog(response.stripLeading()));
+                DialogBox.getClarryDialog(response.text().stripLeading(), response.isError()));
         userInput.clear();
+        userInput.requestFocus();
 
         if (input.equals("bye")) {
             userInput.setDisable(true);
