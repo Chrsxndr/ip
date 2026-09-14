@@ -5,8 +5,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane prefHeight="640.0" prefWidth="520.0"
@@ -17,18 +20,39 @@
         <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <Label maxWidth="Infinity" text="Clarry" styleClass="header">
+                <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="header">
                     <padding>
-                        <Insets bottom="14.0" left="18.0" right="18.0" top="14.0" />
+                        <Insets bottom="10.0" left="16.0" right="16.0" top="10.0" />
                     </padding>
-                </Label>
+                    <children>
+                        <StackPane minWidth="64.0" prefWidth="64.0" maxWidth="64.0"
+                                   minHeight="64.0" prefHeight="64.0" maxHeight="64.0"
+                                   styleClass="mascot-badge">
+                            <children>
+                                <ImageView fitWidth="64.0" fitHeight="64.0" preserveRatio="true"
+                                           smooth="true" accessibleText="Clarry, a friendly gray shark waving hello">
+                                    <image>
+                                        <Image url="@../images/clarry-shark.png" />
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </StackPane>
+                        <VBox alignment="CENTER_LEFT" spacing="3.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Clarry" styleClass="header-title" />
+                                <Label text="Your friendly task companion" styleClass="header-subtitle"
+                                       wrapText="true" minHeight="-Infinity" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
                 <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER"
-                            VBox.vgrow="ALWAYS" styleClass="chat-scroll-pane">
+                            minHeight="0.0" VBox.vgrow="ALWAYS" styleClass="chat-scroll-pane">
                     <content>
-                        <VBox fx:id="dialogContainer" fillWidth="true" spacing="12.0"
+                        <VBox fx:id="dialogContainer" fillWidth="true" spacing="10.0"
                               styleClass="dialog-container">
                             <padding>
-                                <Insets bottom="18.0" left="14.0" right="14.0" top="18.0" />
+                                <Insets bottom="14.0" left="12.0" right="12.0" top="14.0" />
                             </padding>
                         </VBox>
                     </content>
@@ -39,7 +63,7 @@
                     </padding>
                     <children>
                         <TextField fx:id="userInput" onAction="#handleUserInput"
-                                   promptText="Enter a command..." HBox.hgrow="ALWAYS" />
+                                   minWidth="0.0" promptText="Enter a command, or try help" HBox.hgrow="ALWAYS" />
                         <Button fx:id="sendButton" onAction="#handleUserInput" text="Send" />
                     </children>
                 </HBox>

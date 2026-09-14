@@ -2,26 +2,24 @@ package clarry.ui;
 
 import java.io.IOException;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-/**
- * Displays one user or Clarry message with a speaker badge.
- */
+/** Displays compact user commands and wider Clarry response cards. */
 public class DialogBox extends HBox {
     @FXML
     private Label dialog;
     @FXML
-    private Label avatar;
+    private Label speaker;
+    @FXML
+    private VBox message;
 
-    /** Loads the reusable dialog layout and fills it with message content. */
-    private DialogBox(String text, String avatarText) {
+    /** Loads a message card whose width follows the available conversation width. */
+    private DialogBox(String text, boolean isUser, boolean isError) {
         try {
             FXMLLoader loader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
             loader.setController(this);
@@ -30,44 +28,45 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             throw new AssertionError("Unable to load a dialog box", e);
         }
-        assert dialog != null : "FXML must inject the dialog label";
-        assert avatar != null : "FXML must inject the avatar label";
+        assert dialog != null && speaker != null && message != null : "FXML must inject the message controls";
         dialog.setText(text);
-        avatar.setText(avatarText);
+        speaker.setText(isUser ? "YOU" : isError ? "ERROR" : "CLARRY");
+        setAlignment(isUser ? Pos.TOP_RIGHT : Pos.TOP_LEFT);
+        message.getStyleClass().add(isUser ? "user-bubble" : isError ? "error-bubble" : "clarry-bubble");
+        message.maxWidthProperty().bind(widthProperty().multiply(isUser ? 0.85 : 1.0));
+        if (!isUser) {
+            message.prefWidthProperty().bind(message.maxWidthProperty());
+        }
     }
 
     /**
-     * Creates a right-aligned dialog for the user.
+     * Creates a right-aligned user command.
      *
      * @param text user's message
      * @return user dialog box
      */
     public static DialogBox getUserDialog(String text) {
-        DialogBox dialogBox = new DialogBox(text, "YOU");
-        dialogBox.dialog.getStyleClass().add("user-bubble");
-        dialogBox.avatar.getStyleClass().add("user-avatar");
-        return dialogBox;
+        return new DialogBox(text, true, false);
     }
 
     /**
-     * Creates a left-aligned dialog for Clarry.
+     * Creates a regular Clarry reply.
      *
      * @param text Clarry's response
      * @return Clarry dialog box
      */
     public static DialogBox getClarryDialog(String text) {
-        DialogBox dialogBox = new DialogBox(text, "C");
-        dialogBox.flip();
-        dialogBox.dialog.getStyleClass().add("clarry-bubble");
-        dialogBox.avatar.getStyleClass().add("clarry-avatar");
-        return dialogBox;
+        return getClarryDialog(text, false);
     }
 
-    /** Places the speaker badge before the message for Clarry responses. */
-    private void flip() {
-        ObservableList<Node> children = FXCollections.observableArrayList(getChildren());
-        FXCollections.reverse(children);
-        getChildren().setAll(children);
-        setAlignment(Pos.TOP_LEFT);
+    /**
+     * Creates a Clarry reply with a distinct label and colour for errors.
+     *
+     * @param text Clarry's response
+     * @param isError whether the command failed
+     * @return Clarry response card
+     */
+    public static DialogBox getClarryDialog(String text, boolean isError) {
+        return new DialogBox(text, false, isError);
     }
 }

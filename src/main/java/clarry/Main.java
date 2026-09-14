@@ -36,8 +36,9 @@ public class Main extends Application {
             scene.getStylesheets().add(stylesheet.toExternalForm());
             stage.setScene(scene);
             stage.setTitle("Clarry");
-            stage.setMinWidth(520);
-            stage.setMinHeight(640);
+            stage.setMinWidth(360);
+            stage.setMinHeight(420);
+            stage.setResizable(true);
             stage.show();
         } catch (IOException e) {
             throw new AssertionError("Unable to load Clarry's interface", e);
