@@ -103,3 +103,10 @@ java -jar "build\libs\clarry.jar"
 ```
 
 The `build` directory contains generated files and should not be committed to Git.
+
+## Testing
+
+The JUnit suite includes the documented console transcripts, parser and task
+boundaries, storage round trips, and failure recovery. See
+[the testing guide](test/testing.md) for commands, coverage and the pending manual
+OS/language/display checklist.
