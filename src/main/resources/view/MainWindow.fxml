@@ -40,7 +40,7 @@
                         <VBox alignment="CENTER_LEFT" spacing="3.0" minWidth="0.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <Label text="Clarry" styleClass="header-title" />
-                                <Label text="Your friendly task companion" styleClass="header-subtitle"
+                                <Label text="Your little task shark" styleClass="header-subtitle"
                                        wrapText="true" minHeight="-Infinity" />
                             </children>
                         </VBox>

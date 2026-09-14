@@ -4,13 +4,15 @@ Run each case as a new Clarry session. Before each case, remove `data/clarry.txt
 
 ## Help command
 
-Aim: Verify that help lists every supported command, does not add tasks, and rejects extra arguments.
+Aim: Verify that help lists every supported command, does not add tasks, explains empty lists/searches/dates, and rejects extra arguments.
 
 ### Inputs
 
 ```text
 help
 list
+find shells
+on 2019-10-16
 help extra
 bye
 ```
@@ -28,11 +30,11 @@ bye
                          |____/
 
 ____________________________________________________________
- Hello! I'm Clarry.
- What can I do for you?
+ Hi, I'm Clarry, your little task shark!
+ What are we tackling today?
 ____________________________________________________________
 ____________________________________________________________
- Here are the commands I understand:
+ Need a course to follow? Here are my commands:
  help - show this help message
  list - show all tasks
  todo DESCRIPTION - add a todo
@@ -46,13 +48,19 @@ ____________________________________________________________
  bye - exit Clarry
 ____________________________________________________________
 ____________________________________________________________
- Here are the tasks in your list:
+ Your radar is clear! Add a task with 'todo DESCRIPTION'.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! I'm sorry, but I don't know what that means :-(
+ Nothing spotted! Try another keyword.
 ____________________________________________________________
 ____________________________________________________________
- Bye. Hope to see you again soon!
+ Clear waters! No tasks on 2019-10-16.
+____________________________________________________________
+____________________________________________________________
+ I'm a little lost! Type 'help' to see what I understand.
+____________________________________________________________
+____________________________________________________________
+ See you next tide! You've got this.
 ____________________________________________________________
 ```
 
@@ -89,58 +97,58 @@ bye
                          |____/
 
 ____________________________________________________________
- Hello! I'm Clarry.
- What can I do for you?
+ Hi, I'm Clarry, your little task shark!
+ What are we tackling today?
 ____________________________________________________________
 ____________________________________________________________
- Got it. I've added this task:
+ Got it! Safely aboard your task list:
    [T][ ] read book
- Now you have 1 tasks in the list.
+ You have 1 task aboard.
 ____________________________________________________________
 ____________________________________________________________
- Got it. I've added this task:
+ Got it! Safely aboard your task list:
    [D][ ] submit assignment (by: Oct 15 2019)
- Now you have 2 tasks in the list.
+ You have 2 tasks aboard.
 ____________________________________________________________
 ____________________________________________________________
- Got it. I've added this task:
+ Got it! Safely aboard your task list:
    [E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
- Now you have 3 tasks in the list.
+ You have 3 tasks aboard.
 ____________________________________________________________
 ____________________________________________________________
- Nice! I've marked this task as done:
+ Fin-tastic! One less thing to tackle:
    [D][X] submit assignment (by: Oct 15 2019)
 ____________________________________________________________
 ____________________________________________________________
- OK, I've marked this task as not done yet:
+ Back on your radar:
    [D][ ] submit assignment (by: Oct 15 2019)
 ____________________________________________________________
 ____________________________________________________________
- Here are the tasks in your list:
+ Here's what's on your radar:
  1.[T][ ] read book
  2.[D][ ] submit assignment (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
 ____________________________________________________________
 ____________________________________________________________
- Here are the matching tasks in your list:
+ Here's what I spotted:
  1.[T][ ] read book
 ____________________________________________________________
 ____________________________________________________________
- Here are the tasks on 2019-10-16:
+ Here's what's on your radar for 2019-10-16:
  1.[E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
 ____________________________________________________________
 ____________________________________________________________
- Noted. I've removed this task:
+ All clear! I've removed this task:
    [D][ ] submit assignment (by: Oct 15 2019)
- Now you have 2 tasks in the list.
+ You have 2 tasks aboard.
 ____________________________________________________________
 ____________________________________________________________
- Here are the tasks in your list:
+ Here's what's on your radar:
  1.[T][ ] read book
  2.[E][ ] project meeting (from: Oct 15 2019 14:00 to: Oct 16 2019 16:00)
 ____________________________________________________________
 ____________________________________________________________
- Bye. Hope to see you again soon!
+ See you next tide! You've got this.
 ____________________________________________________________
 ```
 
@@ -181,52 +189,52 @@ bye
                          |____/
 
 ____________________________________________________________
- Hello! I'm Clarry.
- What can I do for you?
+ Hi, I'm Clarry, your little task shark!
+ What are we tackling today?
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! The description of a todo cannot be empty.
+ The description of a todo cannot be empty.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! A deadline needs a '/by' date, e.g. deadline return book /by 2019-10-15
+ A deadline needs a '/by' date, e.g. deadline return book /by 2019-10-15
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! Please use yyyy-mm-dd for the deadline date, e.g. 2019-10-15.
+ Please use yyyy-mm-dd for the deadline date, e.g. 2019-10-15.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! An event needs a description, '/from', and '/to' date and time.
+ An event needs a description, '/from', and '/to' date and time.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! Please use yyyy-mm-dd HH:mm for event dates, e.g. 2019-10-15 14:00.
+ Please use yyyy-mm-dd HH:mm for event dates, e.g. 2019-10-15 14:00.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! An event cannot end before it starts.
+ An event cannot end before it starts.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! Please use yyyy-mm-dd for the date, e.g. on 2019-10-15.
+ Please use yyyy-mm-dd for the date, e.g. on 2019-10-15.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! Please specify which task number to mark.
+ Please specify which task number to mark.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! Please provide a valid task number.
+ Please provide a valid task number.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! That task number doesn't exist.
+ That task number doesn't exist. Type 'list' to check your tasks.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! Please specify which task number to delete.
+ Please specify which task number to delete.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! That task number doesn't exist.
+ That task number doesn't exist. Type 'list' to check your tasks.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! Please specify a keyword to find.
+ Please specify a keyword to find.
 ____________________________________________________________
 ____________________________________________________________
- OOPS!!! I'm sorry, but I don't know what that means :-(
+ I'm a little lost! Type 'help' to see what I understand.
 ____________________________________________________________
 ____________________________________________________________
- Bye. Hope to see you again soon!
+ See you next tide! You've got this.
 ____________________________________________________________
 ```

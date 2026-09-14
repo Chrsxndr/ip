@@ -31,9 +31,13 @@ public class Ui {
         printLines(
                 banner,
                 DIVIDER,
-                " Hello! I'm Clarry.",
-                " What can I do for you?",
+                " " + getWelcomeMessage().replace("\n", "\n "),
                 DIVIDER);
+    }
+
+    /** Returns the shared greeting for the console and GUI. */
+    public static String getWelcomeMessage() {
+        return "Hi, I'm Clarry, your little task shark!\nWhat are we tackling today?";
     }
 
     /** Reads one full command line from the user. */
@@ -53,12 +57,12 @@ public class Ui {
 
     /** Returns Clarry's goodbye response. */
     public String getGoodbyeMessage() {
-        return " Bye. Hope to see you again soon!";
+        return " See you next tide! You've got this.";
     }
 
     /** Returns guidance for every command supported by Clarry. */
     public String getHelpMessage() {
-        return " Here are the commands I understand:\n"
+        return " Need a course to follow? Here are my commands:\n"
                 + " help - show this help message\n"
                 + " list - show all tasks\n"
                 + " todo DESCRIPTION - add a todo\n"
@@ -74,41 +78,55 @@ public class Ui {
 
     /** Returns a formatted list of all tasks. */
     public String getListMessage(List<Task> tasks) {
-        return getTaskListMessage(" Here are the tasks in your list:", tasks);
+        if (tasks.isEmpty()) {
+            return " Your radar is clear! Add a task with 'todo DESCRIPTION'.";
+        }
+        return getTaskListMessage(" Here's what's on your radar:", tasks);
     }
 
     /** Returns a formatted list of tasks on the specified date. */
     public String getTasksOnDateMessage(LocalDate date, List<Task> tasks) {
-        return getTaskListMessage(" Here are the tasks on " + date + ":", tasks);
+        if (tasks.isEmpty()) {
+            return " Clear waters! No tasks on " + date + ".";
+        }
+        return getTaskListMessage(" Here's what's on your radar for " + date + ":", tasks);
     }
 
     /** Returns a formatted list of tasks matching a search. */
     public String getFoundTasksMessage(List<Task> tasks) {
-        return getTaskListMessage(" Here are the matching tasks in your list:", tasks);
+        if (tasks.isEmpty()) {
+            return " Nothing spotted! Try another keyword.";
+        }
+        return getTaskListMessage(" Here's what I spotted:", tasks);
     }
 
     /** Returns a task-addition response. */
     public String getAddedMessage(Task task, int taskCount) {
-        return " Got it. I've added this task:\n"
+        return " Got it! Safely aboard your task list:\n"
                 + "   " + task + "\n"
-                + " Now you have " + taskCount + " tasks in the list.";
+                + getTaskCountMessage(taskCount);
     }
 
     /** Returns a task-deletion response. */
     public String getDeletedMessage(Task task, int taskCount) {
-        return " Noted. I've removed this task:\n"
+        return " All clear! I've removed this task:\n"
                 + "   " + task + "\n"
-                + " Now you have " + taskCount + " tasks in the list.";
+                + getTaskCountMessage(taskCount);
     }
 
     /** Returns a task-completion response. */
     public String getMarkedMessage(Task task) {
-        return " Nice! I've marked this task as done:\n   " + task;
+        return " Fin-tastic! One less thing to tackle:\n   " + task;
     }
 
     /** Returns a task-incomplete response. */
     public String getUnmarkedMessage(Task task) {
-        return " OK, I've marked this task as not done yet:\n   " + task;
+        return " Back on your radar:\n   " + task;
+    }
+
+    /** Keeps the task count readable for both one task and multiple tasks. */
+    private String getTaskCountMessage(int taskCount) {
+        return " You have " + taskCount + (taskCount == 1 ? " task" : " tasks") + " aboard.";
     }
 
     /** Returns an error response. */
@@ -118,17 +136,17 @@ public class Ui {
 
     /** Displays an error when saving fails. */
     public void showSaveError() {
-        showError("OOPS!!! Could not save tasks to disk.");
+        showError("Could not save tasks to disk.");
     }
 
     /** Displays an error when loading fails. */
     public void showLoadError() {
-        showError("OOPS!!! Could not load saved tasks.");
+        showError("Could not load saved tasks.");
     }
 
     /** Displays an error for a malformed saved task. */
     public void showCorruptedLineError() {
-        showError("OOPS!!! Skipping a corrupted line in the save file.");
+        showError("Skipping a corrupted line in the save file.");
     }
 
     /** Builds a numbered task-list response with the supplied heading. */
