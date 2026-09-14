@@ -65,7 +65,7 @@ public class Clarry {
         } catch (ClarryException e) {
             return new Response(ui.getErrorMessage(e.getMessage()), true);
         } catch (NumberFormatException e) {
-            return new Response(ui.getErrorMessage("OOPS!!! Please provide a valid task number."), true);
+            return new Response(ui.getErrorMessage("Please provide a valid task number."), true);
         }
     }
 

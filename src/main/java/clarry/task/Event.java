@@ -34,11 +34,11 @@ public class Event extends Task {
             this.to = LocalDateTime.parse(to, INPUT_FORMAT);
         } catch (DateTimeParseException e) {
             throw new ClarryException(
-                    "OOPS!!! Please use yyyy-mm-dd HH:mm for event dates, e.g. 2019-10-15 14:00.");
+                    "Please use yyyy-mm-dd HH:mm for event dates, e.g. 2019-10-15 14:00.");
         }
 
         if (this.to.isBefore(this.from)) {
-            throw new ClarryException("OOPS!!! An event cannot end before it starts.");
+            throw new ClarryException("An event cannot end before it starts.");
         }
         assert !this.to.isBefore(this.from) : "A valid event must not end before it starts";
     }

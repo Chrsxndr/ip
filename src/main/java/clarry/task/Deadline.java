@@ -25,7 +25,7 @@ public class Deadline extends Task {
             this.by = LocalDate.parse(by);
         } catch (DateTimeParseException e) {
             throw new ClarryException(
-                    "OOPS!!! Please use yyyy-mm-dd for the deadline date, e.g. 2019-10-15.");
+                    "Please use yyyy-mm-dd for the deadline date, e.g. 2019-10-15.");
         }
     }
 

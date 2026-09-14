@@ -41,7 +41,7 @@ public class MainWindow extends AnchorPane {
         assert clarry != null : "Main window requires a Clarry backend";
         this.clarry = clarry;
         dialogContainer.getChildren().add(
-                DialogBox.getClarryDialog("Hello! I'm Clarry.\nWhat can I do for you?"));
+                DialogBox.getClarryDialog(Ui.getWelcomeMessage()));
     }
 
     /** Sends non-blank input to Clarry and displays both sides of the exchange. */

@@ -47,7 +47,7 @@ public class Parser {
                 : "Todo parsing requires a todo command";
         String description = parseArguments(input, "todo");
         if (description.isEmpty()) {
-            throw new ClarryException("OOPS!!! The description of a todo cannot be empty.");
+            throw new ClarryException("The description of a todo cannot be empty.");
         }
         return new Todo(description);
     }
@@ -64,15 +64,15 @@ public class Parser {
                 : "Deadline parsing requires a deadline command";
         String details = parseArguments(input, "deadline");
         if (details.isEmpty()) {
-            throw new ClarryException("OOPS!!! The description of a deadline cannot be empty.");
+            throw new ClarryException("The description of a deadline cannot be empty.");
         }
         if (!details.contains(" /by ")) {
             throw new ClarryException(
-                    "OOPS!!! A deadline needs a '/by' date, e.g. deadline return book /by 2019-10-15");
+                    "A deadline needs a '/by' date, e.g. deadline return book /by 2019-10-15");
         }
         String[] parts = details.split(" /by ", 2);
         if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-            throw new ClarryException("OOPS!!! A deadline needs both a description and a '/by' date.");
+            throw new ClarryException("A deadline needs both a description and a '/by' date.");
         }
         return new Deadline(parts[0].trim(), parts[1].trim());
     }
@@ -92,7 +92,7 @@ public class Parser {
         String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to ", 2) : new String[0];
         if (fromSplit.length != 2 || toSplit.length != 2 || fromSplit[0].trim().isEmpty()
                 || toSplit[0].trim().isEmpty() || toSplit[1].trim().isEmpty()) {
-            throw new ClarryException("OOPS!!! An event needs a description, '/from', and '/to' date and time.");
+            throw new ClarryException("An event needs a description, '/from', and '/to' date and time.");
         }
         return new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
     }
@@ -111,11 +111,11 @@ public class Parser {
         assert taskCount >= 0 : "Task count cannot be negative";
         String numberPart = parseArguments(input, command);
         if (numberPart.isEmpty()) {
-            throw new ClarryException("OOPS!!! Please specify which task number to " + command + ".");
+            throw new ClarryException("Please specify which task number to " + command + ".");
         }
         int index = Integer.parseInt(numberPart) - 1;
         if (index < 0 || index >= taskCount) {
-            throw new ClarryException("OOPS!!! That task number doesn't exist.");
+            throw new ClarryException("That task number doesn't exist. Type 'list' to check your tasks.");
         }
         return index;
     }
@@ -134,7 +134,7 @@ public class Parser {
         try {
             return LocalDate.parse(dateText);
         } catch (DateTimeParseException e) {
-            throw new ClarryException("OOPS!!! Please use yyyy-mm-dd for the date, e.g. on 2019-10-15.");
+            throw new ClarryException("Please use yyyy-mm-dd for the date, e.g. on 2019-10-15.");
         }
     }
 
@@ -150,14 +150,14 @@ public class Parser {
                 : "Keyword parsing requires a find command";
         String keyword = parseArguments(input, "find");
         if (keyword.isEmpty()) {
-            throw new ClarryException("OOPS!!! Please specify a keyword to find.");
+            throw new ClarryException("Please specify a keyword to find.");
         }
         return keyword;
     }
 
     /** Throws Clarry's standard error for an unsupported command. */
     public void throwUnknownCommand() throws ClarryException {
-        throw new ClarryException("OOPS!!! I'm sorry, but I don't know what that means :-(");
+        throw new ClarryException("I'm a little lost! Type 'help' to see what I understand.");
     }
 
     /** Returns the trimmed text following a command word. */
