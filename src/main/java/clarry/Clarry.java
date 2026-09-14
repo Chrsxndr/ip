@@ -22,11 +22,23 @@ public class Clarry {
     private final Parser parser;
     private TaskList tasks;
     private boolean isExitRequested;
+    /** Blocks writes when loading could not safely recover the whole save file. */
+    private boolean isStorageReadOnly;
+    private String pendingStorageWarning;
 
     /** Creates Clarry with its console user interface. */
     public Clarry() {
+        this(DATA_FILE);
+    }
+
+    /**
+     * Creates Clarry with a specified save file, allowing isolated test data.
+     *
+     * @param dataFile path to the task file
+     */
+    public Clarry(Path dataFile) {
         ui = new Ui();
-        storage = new Storage(DATA_FILE);
+        storage = new Storage(dataFile);
         parser = new Parser();
         isExitRequested = false;
     }
@@ -60,13 +72,23 @@ public class Clarry {
      */
     public Response getCommandResponse(String input) {
         initialiseTasks();
+        Response response;
         try {
-            return new Response(executeCommand(input), false);
+            response = new Response(executeCommand(parser.normalizeInput(input)), false);
         } catch (ClarryException e) {
-            return new Response(ui.getErrorMessage(e.getMessage()), true);
+            response = new Response(ui.getErrorMessage(e.getMessage()), true);
         } catch (NumberFormatException e) {
-            return new Response(ui.getErrorMessage("Please provide a valid task number."), true);
+            response = new Response(ui.getErrorMessage("Please provide a valid task number."), true);
         }
+        if (pendingStorageWarning != null) {
+            response = new Response(" " + pendingStorageWarning + "\n" + response.text(), true);
+            pendingStorageWarning = null;
+        }
+        return response;
+    }
+
+    public boolean isExitRequested() {
+        return isExitRequested;
     }
 
     /** Starts Clarry from the command line. */
@@ -79,11 +101,15 @@ public class Clarry {
      *
      * @param tasks tasks to save
      */
-    private void saveTasks(TaskList tasks) {
+    private void saveTasks(TaskList tasks) throws ClarryException {
+        if (isStorageReadOnly) {
+            throw new ClarryException("Changes are blocked to protect your save file. Repair it and restart Clarry.");
+        }
         try {
             storage.save(tasks);
-        } catch (IOException e) {
-            ui.showSaveError();
+        } catch (IOException | SecurityException e) {
+            throw new ClarryException(
+                    "Could not save tasks. No changes were applied. Check file access and try again.");
         }
     }
 
@@ -147,8 +173,7 @@ public class Clarry {
         assert taskIndex >= 0 && taskIndex < tasks.size()
                 : "Parser must return an index within the task list";
         Task task = tasks.get(taskIndex);
-        task.markAsDone();
-        saveTasks(tasks);
+        updateCompletion(task, true);
         return ui.getMarkedMessage(task);
     }
 
@@ -158,8 +183,7 @@ public class Clarry {
         assert taskIndex >= 0 && taskIndex < tasks.size()
                 : "Parser must return an index within the task list";
         Task task = tasks.get(taskIndex);
-        task.markAsNotDone();
-        saveTasks(tasks);
+        updateCompletion(task, false);
         return ui.getUnmarkedMessage(task);
     }
 
@@ -168,16 +192,44 @@ public class Clarry {
         int taskIndex = parser.parseIndex(input, "delete", tasks.size());
         assert taskIndex >= 0 && taskIndex < tasks.size()
                 : "Parser must return an index within the task list";
-        Task deletedTask = tasks.delete(taskIndex);
-        saveTasks(tasks);
+        TaskList updatedTasks = new TaskList(tasks.getTasks());
+        Task deletedTask = updatedTasks.delete(taskIndex);
+        saveTasks(updatedTasks);
+        tasks = updatedTasks;
         return ui.getDeletedMessage(deletedTask, tasks.size());
     }
 
     /** Adds a parsed task to the task list. */
-    private String addTask(Task task) {
-        tasks.add(task);
-        saveTasks(tasks);
+    private String addTask(Task task) throws ClarryException {
+        if (tasks.getTasks().stream().anyMatch(task::hasSameDetails)) {
+            throw new ClarryException("That task is already aboard! Type 'list' to find it.");
+        }
+        TaskList updatedTasks = new TaskList(tasks.getTasks());
+        updatedTasks.add(task);
+        saveTasks(updatedTasks);
+        tasks = updatedTasks;
         return ui.getAddedMessage(task, tasks.size());
+    }
+
+    /** Restores the original completion status if persisting the change fails. */
+    private void updateCompletion(Task task, boolean isDone) throws ClarryException {
+        boolean wasDone = task.isDone();
+        setCompletion(task, isDone);
+        try {
+            saveTasks(tasks);
+        } catch (ClarryException e) {
+            setCompletion(task, wasDone);
+            throw e;
+        }
+    }
+
+    /** Applies a completion flag using the task's existing operations. */
+    private void setCompletion(Task task, boolean isDone) {
+        if (isDone) {
+            task.markAsDone();
+        } else {
+            task.markAsNotDone();
+        }
     }
 
     /**
@@ -188,12 +240,16 @@ public class Clarry {
     private TaskList loadTasks() {
         try {
             Storage.LoadResult loadResult = storage.load();
-            for (int i = 0; i < loadResult.getCorruptedLineCount(); i++) {
-                ui.showCorruptedLineError();
+            if (loadResult.getCorruptedLineCount() > 0) {
+                isStorageReadOnly = true;
+                pendingStorageWarning = "Some saved tasks are invalid. Showing readable tasks only. "
+                        + "Changes are blocked; repair the save file and restart Clarry.";
             }
             return new TaskList(loadResult.getTasks());
-        } catch (IOException e) {
-            ui.showLoadError();
+        } catch (IOException | SecurityException e) {
+            isStorageReadOnly = true;
+            pendingStorageWarning = "Could not load saved tasks. Changes are blocked; "
+                    + "check the save file and restart Clarry.";
             return new TaskList();
         }
     }

@@ -58,6 +58,17 @@ public abstract class Task {
     }
 
     /**
+     * Compares task type, description and schedule, ignoring completion status.
+     *
+     * @param other task to compare
+     * @return whether both tasks have exactly the same details
+     */
+    public boolean hasSameDetails(Task other) {
+        return toFileFormat().replaceFirst(" \\| [01] \\| ", " | ")
+                .equals(other.toFileFormat().replaceFirst(" \\| [01] \\| ", " | "));
+    }
+
+    /**
      * Returns whether this task occurs on the specified date.
      * Undated tasks do not occur on any date.
      *

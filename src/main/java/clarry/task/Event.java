@@ -25,7 +25,7 @@ public class Event extends Task {
      * @param description description of the task
      * @param from event start date and time in {@code yyyy-MM-dd HH:mm} format
      * @param to event end date and time in {@code yyyy-MM-dd HH:mm} format
-     * @throws ClarryException if either date and time is invalid, or the event ends before it starts
+     * @throws ClarryException if either date and time is invalid, or the end is not after the start
      */
     public Event(String description, String from, String to) throws ClarryException {
         super(description);
@@ -37,10 +37,10 @@ public class Event extends Task {
                     "Please use yyyy-mm-dd HH:mm for event dates, e.g. 2019-10-15 14:00.");
         }
 
-        if (this.to.isBefore(this.from)) {
-            throw new ClarryException("An event cannot end before it starts.");
+        if (!this.to.isAfter(this.from)) {
+            throw new ClarryException("An event must end after it starts.");
         }
-        assert !this.to.isBefore(this.from) : "A valid event must not end before it starts";
+        assert this.to.isAfter(this.from) : "A valid event must end after it starts";
     }
 
     /**

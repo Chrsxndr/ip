@@ -13,6 +13,23 @@ import clarry.task.Todo;
  */
 public class Parser {
     /**
+     * Normalizes spaces and tabs while rejecting blank or multiline commands.
+     *
+     * @param input raw command text
+     * @return command with single spaces and no surrounding whitespace
+     * @throws ClarryException if the input is blank or contains control characters
+     */
+    public String normalizeInput(String input) throws ClarryException {
+        if (input == null || input.isBlank()) {
+            throw new ClarryException("Please enter a command. Type 'help' to see what I understand.");
+        }
+        if (input.chars().anyMatch(character -> Character.isISOControl(character) && character != '\t')) {
+            throw new ClarryException("Please enter one command on a single line without control characters.");
+        }
+        return input.strip().replaceAll("\\h+", " ");
+    }
+
+    /**
      * Returns the type of the command entered by the user.
      *
      * @param input complete command input
@@ -30,7 +47,7 @@ public class Parser {
      * @throws ClarryException if the input is not exactly the command word
      */
     public void requireExactCommand(String input, String command) throws ClarryException {
-        if (!input.equals(command)) {
+        if (!input.strip().equals(command)) {
             throwUnknownCommand();
         }
     }
@@ -49,6 +66,7 @@ public class Parser {
         if (description.isEmpty()) {
             throw new ClarryException("The description of a todo cannot be empty.");
         }
+        validateDescription(description);
         return new Todo(description);
     }
 
@@ -66,14 +84,16 @@ public class Parser {
         if (details.isEmpty()) {
             throw new ClarryException("The description of a deadline cannot be empty.");
         }
+        requireSingleMarker(details, "/by");
         if (!details.contains(" /by ")) {
             throw new ClarryException(
                     "A deadline needs a '/by' date, e.g. deadline return book /by 2019-10-15");
         }
-        String[] parts = details.split(" /by ", 2);
+        String[] parts = details.split(" /by(?: |$)", -1);
         if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
             throw new ClarryException("A deadline needs both a description and a '/by' date.");
         }
+        validateDescription(parts[0].trim());
         return new Deadline(parts[0].trim(), parts[1].trim());
     }
 
@@ -88,12 +108,15 @@ public class Parser {
         assert CommandType.fromWord(getCommandWord(input)) == CommandType.EVENT
                 : "Event parsing requires an event command";
         String details = parseArguments(input, "event");
-        String[] fromSplit = details.split(" /from ", 2);
-        String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to ", 2) : new String[0];
+        requireSingleMarker(details, "/from");
+        requireSingleMarker(details, "/to");
+        String[] fromSplit = details.split(" /from(?: |$)", -1);
+        String[] toSplit = fromSplit.length == 2 ? fromSplit[1].split(" /to(?: |$)", -1) : new String[0];
         if (fromSplit.length != 2 || toSplit.length != 2 || fromSplit[0].trim().isEmpty()
                 || toSplit[0].trim().isEmpty() || toSplit[1].trim().isEmpty()) {
             throw new ClarryException("An event needs a description, '/from', and '/to' date and time.");
         }
+        validateDescription(fromSplit[0].trim());
         return new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim());
     }
 
@@ -113,11 +136,19 @@ public class Parser {
         if (numberPart.isEmpty()) {
             throw new ClarryException("Please specify which task number to " + command + ".");
         }
-        int index = Integer.parseInt(numberPart) - 1;
-        if (index < 0 || index >= taskCount) {
+        if (!numberPart.matches("[0-9]+")) {
+            throw new ClarryException("Please provide a valid task number.");
+        }
+        int number;
+        try {
+            number = Integer.parseInt(numberPart);
+        } catch (NumberFormatException e) {
+            throw new ClarryException("Please provide a valid task number.");
+        }
+        if (number < 1 || number > taskCount) {
             throw new ClarryException("That task number doesn't exist. Type 'list' to check your tasks.");
         }
-        return index;
+        return number - 1;
     }
 
     /**
@@ -162,12 +193,27 @@ public class Parser {
 
     /** Returns the trimmed text following a command word. */
     private String parseArguments(String input, String command) {
+        input = input.strip();
         return input.length() > command.length() ? input.substring(command.length()).trim() : "";
     }
 
     /** Returns the first whitespace-delimited word in a command. */
     private String getCommandWord(String input) {
-        int firstSpace = input.indexOf(' ');
-        return firstSpace == -1 ? input : input.substring(0, firstSpace);
+        return input.strip().split("\\s+", 2)[0];
+    }
+
+    /** Rejects repeated reserved markers before attempting to parse their values. */
+    private void requireSingleMarker(String details, String marker) throws ClarryException {
+        long count = java.util.Arrays.stream(details.split("\\s+")).filter(marker::equals).count();
+        if (count > 1) {
+            throw new ClarryException("Please specify '" + marker + "' only once.");
+        }
+    }
+
+    /** Prevents a task description from corrupting the pipe-separated save format. */
+    private void validateDescription(String description) throws ClarryException {
+        if (description.contains("|")) {
+            throw new ClarryException("Task descriptions cannot contain '|'; please use another character.");
+        }
     }
 }

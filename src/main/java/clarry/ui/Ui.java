@@ -42,7 +42,7 @@ public class Ui {
 
     /** Reads one full command line from the user. */
     public String readCommand() {
-        return scanner.nextLine();
+        return scanner.hasNextLine() ? scanner.nextLine() : "bye";
     }
 
     /** Displays an error message. */

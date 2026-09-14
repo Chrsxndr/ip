@@ -49,11 +49,28 @@ You should see Clarry's welcome banner in the Run console. Type a command and pr
 Task numbers shown by `list` start at 1.
 Dates use `yyyy-MM-dd`, while event date-times use `yyyy-MM-dd HH:mm`.
 
+Leading/trailing spaces and repeated spaces or tabs are accepted and normalized.
+Event end times must be strictly after their start times, and date markers
+(`/by`, `/from`, `/to`) must not be repeated. Task numbers must contain digits only.
+Descriptions can include ordinary punctuation and Unicode text, but not `|` or
+control characters because these would interfere with saved task data.
+
+An exact duplicate (same type, case-sensitive description, and schedule) is rejected,
+even if the existing task is complete. Different schedules count as different tasks.
+
 ## Saved tasks
 
 Clarry automatically saves tasks after every change in `data/clarry.txt` and reloads them next time it starts. The `data` folder is created automatically when needed and is intentionally not tracked by Git, so your personal task list will not be committed to the project.
 
-If the save file is missing, Clarry starts with an empty list. If one saved line is malformed, Clarry skips that line and loads the remaining valid tasks.
+If the save file is missing, Clarry starts with an empty list. If saved lines are
+malformed or duplicated, Clarry loads the readable tasks and displays a warning with
+the first command response. It blocks changes to protect the original file. An
+unreadable save file also blocks changes. Back up and repair the file (or fix its
+access permissions), then restart Clarry to resume saving.
+
+Clarry writes to a temporary file before replacing the save file. If saving fails,
+it reports the error in both the GUI and console and leaves the task list unchanged.
+Fix the file access or disk-space problem and retry the command.
 
 ## Running with Gradle
 
